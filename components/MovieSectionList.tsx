@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { StackParamsList } from "../navigators/RootNavigator";
+import { ProgressView } from "@react-native-community/progress-view";
 
 type Props = {
   title: string;
@@ -48,12 +49,43 @@ const Item = ({ item, onPress }: ItemProps) => {
   return (
     <TouchableOpacity onPress={onPress}>
       <View style={styles.itemContainer}>
-        <Image
-          style={styles.image}
-          source={{
-            uri: `https://image.tmdb.org/t/p/w500/${item.poster_path}`,
+        <View
+          style={{
+            flex: 1,
+            position: "absolute",
+            height: 250,
+            top: 0,
+            right: 0,
+            left: 0,
+            bottom: 0,
           }}
-        />
+        >
+          <Image
+            style={styles.image}
+            source={{
+              uri: `https://image.tmdb.org/t/p/w500/${item.poster_path}`,
+            }}
+          />
+          <View
+            style={{
+              backgroundColor: "green",
+              height: 50,
+              width: 50,
+              borderRadius: 25,
+              top: 220,
+              right: -20,
+            }}
+          >
+            <ProgressView
+              progressTintColor="orange"
+              trackTintColor="red"
+              progress={0.5}
+              style={{
+                top: 50,
+              }}
+            />
+          </View>
+        </View>
         <Text numberOfLines={1} style={styles.itemTitle}>
           {item.title ?? item.name}
         </Text>
@@ -71,9 +103,14 @@ const styles = StyleSheet.create({
     marginVertical: 20,
   },
   image: {
-    height: 250,
+    position: "absolute",
+    // height: 250,
     resizeMode: "cover",
     borderRadius: 15,
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
   },
   headerText: {
     flex: 1,
@@ -91,6 +128,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     width: 170,
+    height: 300,
     gap: 5,
     marginHorizontal: 5,
   },
