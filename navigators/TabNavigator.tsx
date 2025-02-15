@@ -17,30 +17,62 @@ const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={(props) => ({
-        tabBarIcon: ({ focused, size, color }) => {
-          let iconName;
-
-          if (props.route.name === "Home") {
-            iconName = focused ? "home" : "home-outline";
-          } else if (props.route.name === "Movies") {
-            iconName = focused ? "videocam" : "videocam-outline";
-          } else if (props.route.name === "TVShows") {
-            iconName = focused ? "tv" : "tv-outline";
-          } else if (props.route.name === "Favorites") {
-            iconName = focused ? "bookmark" : "bookmark-outline";
-          }
-
-          // You can return any component that you like here!
-          return <Ionicons name={iconName} size={size} color={color} />;
-        },
         tabBarActiveTintColor: "tomato",
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Movies" component={MoviesScreen} />
-      <Tab.Screen name="TVShows" component={TVShowsScreen} />
-      <Tab.Screen name="Favorites" component={FavoriteScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ focused, size, color }) => (
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Movies"
+        component={MoviesScreen}
+        options={{
+          tabBarIcon: ({ focused, size, color }) => (
+            <Ionicons
+              name={focused ? "videocam" : "videocam-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="TVShows"
+        component={TVShowsScreen}
+        options={{
+          tabBarIcon: ({ focused, size, color }) => (
+            <Ionicons
+              name={focused ? "tv" : "tv-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Favorites"
+        component={FavoriteScreen}
+        options={{
+          tabBarIcon: ({ focused, size, color }) => (
+            <Ionicons
+              name={focused ? "bookmark" : "bookmark-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };

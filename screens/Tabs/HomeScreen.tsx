@@ -1,57 +1,30 @@
-import { useEffect, useState } from "react";
-import {
-  FlatList,
-  Image,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-import MovieService from "../../services/MovieService";
-import { Movie, MovieResponse } from "../../types";
-import MovieSectionList from "../../components/MovieSectionList";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
+import MovieSectionList, {
+  MovieSectionType,
+} from "../../components/MovieSectionList";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StackParamsList } from "../../navigators/RootNavigator";
+import { ScrollView, StyleSheet } from "react-native";
 
 const HomeScreen = ({
   navigation,
 }: {
   navigation: NativeStackNavigationProp<StackParamsList>;
 }) => {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [popular, setPopular] = useState<Movie[]>([]);
-  const [todayMovies, setTodayMovies] = useState<Movie[]>([]);
-  useEffect(() => {
-    MovieService.fetchMovies().then((movies) => {
-      setMovies(movies);
-    });
-
-    MovieService.fetchPopularMovies().then((popular) => {
-      setPopular(popular);
-    });
-
-    MovieService.fetchTodayMovies().then((movies) => {
-      setTodayMovies(movies);
-    });
-  }, []);
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <MovieSectionList
         title="Trending Today"
-        movies={todayMovies}
+        type={MovieSectionType.trending}
         navigation={navigation}
       />
       <MovieSectionList
-        title="What's Popular"
-        movies={movies}
+        title="Popular Movies"
+        type={MovieSectionType.popularMovies}
         navigation={navigation}
       />
       <MovieSectionList
-        title="Free to Watch"
-        movies={popular}
+        title="Popular TV"
+        type={MovieSectionType.popularTV}
         navigation={navigation}
       />
     </ScrollView>

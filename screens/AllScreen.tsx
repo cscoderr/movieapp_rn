@@ -1,21 +1,42 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
+  Button,
   Dimensions,
   FlatList,
   Image,
-  ScrollView,
+  RefreshControl,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
-import { Movie } from "../../types";
-import MovieService from "../../services/MovieService";
+import { Movie } from "../types";
+import MovieService from "../services/MovieService";
+import {
+  NativeStackNavigatorProps,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
+import { StackParamsList } from "../navigators/RootNavigator";
+import { Ionicons } from "@expo/vector-icons";
 
-const MoviesScreen = () => {
+const AllScreen = ({
+  route,
+  navigation,
+}: NativeStackScreenProps<StackParamsList, "All">) => {
+  const title = route.params.title;
   const [movies, setMovies] = useState<Movie[]>([]);
-  const firstTextRef = useRef(null);
   useEffect(() => {
+    navigation.setOptions({
+      title: title,
+      headerLeft: () => {
+        return (
+          <TouchableOpacity onPress={() => navigation.pop()}>
+            <Ionicons name="arrow-back" size={24} />
+          </TouchableOpacity>
+        );
+      },
+    });
     MovieService.fetchMovies().then((movies) => {
       setMovies(movies);
     });
@@ -26,33 +47,20 @@ const MoviesScreen = () => {
       keyExtractor={(item) => item.id.toString()}
       renderItem={Item}
       numColumns={3}
-      StickyHeaderComponent={() => {
-        return (
-          <View>
-            <View
-              style={{
-                flexDirection: "row",
-                gap: 10,
-              }}
-            >
-              <TouchableOpacity ref={firstTextRef}>
-                <Text>Popular</Text>
-              </TouchableOpacity>
-              <Text>Now Playing</Text>
-              <Text>Upcoming</Text>
-              <Text>Top Rate</Text>
-            </View>
-            <View
-              style={{
-                height: 5,
-                width: 50,
-                borderRadius: 20,
-                backgroundColor: "green",
-              }}
-            />
-          </View>
-        );
-      }}
+      refreshControl={
+        <RefreshControl onRefresh={() => {}} refreshing={false} />
+      }
+      ListHeaderComponent={
+        <TextInput
+          placeholder="Enter movie name"
+          style={{
+            borderWidth: 1,
+            padding: 10,
+            margin: 15,
+            borderRadius: 10,
+          }}
+        />
+      }
     />
   );
 };
@@ -119,4 +127,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MoviesScreen;
+export default AllScreen;

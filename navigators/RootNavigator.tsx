@@ -8,25 +8,27 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from "./TabNavigator";
 import DetailsScreen from "../screens/DetailsScreen";
 import { Movie } from "../types";
+import AllScreen from "../screens/AllScreen";
 
 export type StackParamsList = {
   Main: undefined;
-  Details: Movie;
+  Details: { movie: Movie };
+  All: { title: string };
 };
 const Stack = createNativeStackNavigator<StackParamsList>();
 
 const RootNavigator = () => {
   return (
-    <Stack.Navigator initialRouteName="Main">
+    <Stack.Navigator
+      initialRouteName="Main"
+      screenOptions={{ headerShown: false }}
+    >
+      <Stack.Screen name="Main" component={TabNavigator} />
+      <Stack.Screen name="Details" component={DetailsScreen} />
       <Stack.Screen
-        name="Main"
-        component={TabNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Details"
-        component={DetailsScreen}
-        options={{ headerShown: false }}
+        name="All"
+        component={AllScreen}
+        options={{ headerShown: true }}
       />
     </Stack.Navigator>
   );

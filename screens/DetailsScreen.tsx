@@ -3,19 +3,25 @@ import {
   Image,
   ScrollView,
   StyleSheet,
-  Text,
-  TouchableHighlight,
   TouchableOpacity,
   View,
 } from "react-native";
 import { StackParamsList } from "../navigators/RootNavigator";
-import { Cast, Movie } from "../types";
+import { Cast, CastResponse, Movie, MovieResponse } from "../types";
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable } from "react-native-gesture-handler";
-import MovieSectionList from "../components/MovieSectionList";
+import MovieSectionList, {
+  MovieSectionType,
+} from "../components/MovieSectionList";
 import { useEffect, useState } from "react";
 import MovieService from "../services/MovieService";
 import CastSectionList from "../components/CastSectionList";
+import ImageView from "../components/ImageView";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { useQuery } from "@tanstack/react-query";
+import CastListShimmer from "../components/CastListShimmer";
 
 function shuffle(array: Movie[]): Movie[] {
   let newArray = array.slice();
@@ -35,26 +41,14 @@ function shuffle(array: Movie[]): Movie[] {
 const DetailsScreen = ({
   navigation,
   route,
-}: NativeStackScreenProps<StackParamsList>) => {
-  const movie = route.params as Movie;
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [casts, setCasts] = useState<Cast[]>([]);
-  useEffect(() => {
-    MovieService.fetchMovies().then((movies) => {
-      setMovies(shuffle(movies));
-    });
+}: NativeStackScreenProps<StackParamsList, "Details">) => {
+  const movie = route.params.movie;
 
-    MovieService.fetchCasts().then((casts) => {
-      setCasts(casts);
-    });
-  }, []);
+  const { top } = useSafeAreaInsets();
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={{ flexGrow: 1, paddingTop: 400 }}
-    >
+    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.imageContainer}>
-        <View style={styles.topButtonContainer}>
+        <View style={[styles.topButtonContainer, { top: top }]}>
           <View style={styles.circleButton}>
             <TouchableOpacity onPress={() => navigation.pop()}>
               <Ionicons name="arrow-back" size={24} color={"white"} />
@@ -77,17 +71,19 @@ const DetailsScreen = ({
             uri: `https://image.tmdb.org/t/p/w500/${movie.backdrop_path}`,
           }}
         />
-        <Image
+        <ImageView
+          imageUri={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
           style={styles.image}
-          source={{
-            uri: `https://image.tmdb.org/t/p/w500/${movie.poster_path}`,
-          }}
         />
       </View>
-      <CastSectionList title="Cast" casts={casts} navigation={navigation} />
+      <CastSectionList
+        title="Cast"
+        id={movie.id}
+        type={movie.title == null ? "tv" : "movie"}
+      />
       <MovieSectionList
         title="Similar"
-        movies={movies}
+        type={MovieSectionType.popularMovies}
         navigation={navigation}
       />
     </ScrollView>
@@ -100,9 +96,9 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   imageContainer: {
-    position: "absolute",
     height: 300,
     width: "100%",
+    marginBottom: 80,
   },
   backdropImage: {
     position: "absolute",
@@ -110,18 +106,16 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    opacity: 0.3,
+    opacity: 0.6,
+    resizeMode: "cover",
   },
   image: {
-    height: 200,
-    width: 150,
-    borderRadius: 15,
+    position: "absolute",
     left: 20,
-    top: 200,
+    bottom: -100,
   },
   topButtonContainer: {
     position: "absolute",
-    top: 50,
     left: 20,
     right: 20,
     flex: 1,
