@@ -1,57 +1,85 @@
-import { useEffect, useState } from "react";
 import {
-  Dimensions,
+  ActivityIndicator,
   FlatList,
-  Image,
   StyleSheet,
   Text,
+  useWindowDimensions,
   View,
 } from "react-native";
-import { Movie } from "../../types";
-import MovieService from "../../services/MovieService";
+import { MovieResponse } from "../../types";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import MovieCard from "../../components/MovieCard";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { StackParamsList } from "../../navigators/RootNavigator";
+import LoadingIndicator from "../../components/LoadingIndicator";
+import EmptyContent from "../../components/EmptyContent";
 
-const TVShowsScreen = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  useEffect(() => {
-    MovieService.fetchPopularMovies().then((movies) => {
-      setMovies(movies);
-    });
-  }, []);
+async function fetchTV(page: number = 1): Promise<MovieResponse> {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/tv/popular?api_key=${process.env.EXPO_PUBLIC_API_KEY}&page=${page}`,
+    {
+      method: "GET",
+    }
+  );
+  if (!response.ok) {
+    throw new Error("An error occur while fetching movies");
+  }
+  return response.json();
+}
+
+type TVShowsProps = {
+  navigation: NativeStackNavigationProp<StackParamsList>
+}
+const TVShowsScreen = ({navigation}: TVShowsProps) => {
+  const { status, error, fetchNextPage, data, isFetchingNextPage } = useInfiniteQuery({
+    queryKey: ['tv'],
+    queryFn: ({pageParam}) => fetchTV(pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, pages) => lastPage.total_pages > pages.length ? pages.length + 1 : undefined,
+  });
+  const {width} = useWindowDimensions();
+
+  if(status === "pending") {
+    return <LoadingIndicator />
+  }
+
+  if(status === "error") {
+    return <EmptyContent title={error.message} icon="information-circle" />;
+  }
+  
   return (
     <FlatList
-      data={movies}
+      data={data.pages.flatMap((page) => page.results)}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={Item}
-      numColumns={3}
+      renderItem={({ item }) => (
+        <MovieCard
+          movie={item}
+          onPress={() => navigation.push("Details", { movie: item })}
+          style={{ width: (width - 30) / 2 }}
+        />
+      )}
+      ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
+      numColumns={2}
+      columnWrapperStyle={{ gap: 10 }}
+      contentContainerStyle={{ paddingHorizontal: 10 }}
+      onEndReached={() => fetchNextPage()}
+      onEndReachedThreshold={0.3}
+      style={{ paddingVertical: 15, backgroundColor: "white" }}
+      ListFooterComponent={() => {
+        if (isFetchingNextPage) {
+          return <ActivityIndicator />;
+        }
+      }}
     />
   );
 };
 
-type ItemProps = { item: Movie };
-const Item = ({ item }: ItemProps) => {
-  const width = Dimensions.get("window").width;
-  return (
-    <View style={[styles.itemContainer, { width: (width - 30) / 3 }]}>
-      <Image
-        style={styles.image}
-        source={{
-          uri: `https://image.tmdb.org/t/p/w500/${item.poster_path}`,
-        }}
-      />
-      <Text numberOfLines={1} style={styles.itemTitle}>
-        {item.title ?? item.name}
-      </Text>
-      {item.release_date && (
-        <Text style={styles.itemDate}>{item.release_date}</Text>
-      )}
-    </View>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginVertical: 20,
+    backgroundColor: "white",
   },
   image: {
     height: 250,
@@ -71,21 +99,6 @@ const styles = StyleSheet.create({
   },
   listContent: {
     marginBottom: 20,
-  },
-  itemContainer: {
-    gap: 5,
-    marginHorizontal: 5,
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "black",
-    marginTop: 5,
-  },
-  itemDate: {
-    fontSize: 14,
-    fontWeight: "400",
-    color: "grey",
   },
 });
 

@@ -4,12 +4,17 @@ import MoviesScreen from "../screens/Tabs/MoviesScreen";
 import TVShowsScreen from "../screens/Tabs/TvShowsScreen";
 import FavoriteScreen from "../screens/Tabs/FavoriteScreen";
 import { Ionicons } from "@expo/vector-icons";
+import { ComponentProps } from "react";
+import { IconProps } from "@expo/vector-icons/build/createIconSet";
+import { StyleProp, TextStyle, ViewStyle } from "react-native";
+import TabViewEx from "../screens/Tabs/TabViewEx";
 
 export type TabParamsList = {
   Home: undefined;
   Movies: undefined;
   TVShows: undefined;
   Favorites: undefined;
+  Others: undefined;
 };
 const Tab = createBottomTabNavigator<TabParamsList>();
 
@@ -38,6 +43,7 @@ const TabNavigator = () => {
         name="Movies"
         component={MoviesScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
             <Ionicons
               name={focused ? "videocam" : "videocam-outline"}
@@ -73,8 +79,30 @@ const TabNavigator = () => {
           ),
         }}
       />
+      <Tab.Screen
+        name="Others"
+        component={TabViewEx}
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ focused, size, color }) => (
+            <Ionicons
+              name={focused ? "settings" : "settings-outline"}
+              size={size}
+              color={color}
+            />
+          ),
+        }}
+      />
     </Tab.Navigator>
   );
 };
+
+type TabIconProps = {
+  style: StyleProp<TextStyle>,
+  name:  ComponentProps<typeof Ionicons>['name']
+}
+const TabBarIcon = ({ style, name }: TabIconProps) => {
+  return <Ionicons size={24} name={name} style={style} />
+}
 
 export default TabNavigator;

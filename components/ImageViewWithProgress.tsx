@@ -1,39 +1,54 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 
-type ImageViewWithProgessProps = {
+type ImageViewWithProgressProps = {
   imageUri: string;
   progress: number;
 };
 const ImageViewWithProgess = ({
   imageUri,
   progress,
-}: ImageViewWithProgessProps) => {
-  let progressColor: string;
-  if (progress >= 7) {
-    progressColor = "#26CA67";
-  } else if (progress >= 4) {
-    progressColor = "#C9CF26";
-  } else {
-    progressColor = "#CF004E";
-  }
-  let backgroundColor: string;
-  if (progress >= 7) {
-    backgroundColor = "#19361E";
-  } else if (progress >= 4) {
-    backgroundColor = "#322F0D";
-  } else {
-    backgroundColor = "#440C28";
-  }
+}: ImageViewWithProgressProps) => {
+  const [progressColor, setProgressColor] = useState<string>("");
+  const [backgroundColor, setBackgroundColor] = useState<string>("");
+  const [imageLoading, setImageLoading] = useState(true);
+
+  useEffect(() => {
+    const progressFn = (): string => {
+      if (progress >= 7) {
+        return "#26CA67";
+      } else if (progress >= 4) {
+        return "#C9CF26";
+      } else {
+        return "#CF004E";
+      }
+    }
+    const backgroundFn = (): string => {
+      if (progress >= 7) {
+        return "#19361E";
+      } else if (progress >= 4) {
+        return "#322F0D";
+      } else {
+        return "#440C28";
+      }
+    }
+    setProgressColor(progressFn())
+    setBackgroundColor(backgroundFn())
+  }, [progress])
 
   return (
     <View style={styles.container}>
-      <Image
-        style={styles.image}
-        source={{
-          uri: imageUri,
-        }}
-      />
+      <View style={[StyleSheet.absoluteFill]}>
+        <Image
+          style={styles.image}
+          source={{
+            uri: imageUri,
+          }}
+          onLoadEnd={() =>  setImageLoading(false)}
+        />
+        {imageLoading && <ActivityIndicator style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}/>}
+      </View>
       <View style={styles.progressViewContainer}>
         <AnimatedCircularProgress
           size={45}

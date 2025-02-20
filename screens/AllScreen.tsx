@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Button,
   Dimensions,
   FlatList,
@@ -9,9 +10,10 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
-import { Movie } from "../types";
+import { Movie, MovieResponse } from "../types";
 import MovieService from "../services/MovieService";
 import {
   NativeStackNavigatorProps,
@@ -19,14 +21,38 @@ import {
 } from "@react-navigation/native-stack";
 import { StackParamsList } from "../navigators/RootNavigator";
 import { Ionicons } from "@expo/vector-icons";
+import { useInfiniteQuery } from "@tanstack/react-query";
+import LoadingIndicator from "../components/LoadingIndicator";
+import MovieCard from "../components/MovieCard";
+import EmptyContent from "../components/EmptyContent";
+
+async function fetchMovies(page = 1, path: string): Promise<MovieResponse> {
+  const response = await fetch(
+    `https://api.themoviedb.org/3/${path}?api_key=${process.env.EXPO_PUBLIC_API_KEY}&page=${page}`,
+    {method: "GET"}
+  );
+  if (!response.ok) {
+    throw new Error('Unable to fetch movies');
+  } 
+  return  response.json();
+}
 
 const AllScreen = ({
   route,
   navigation,
 }: NativeStackScreenProps<StackParamsList, "All">) => {
   const title = route.params.title;
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const type = route.params.type;
+  const {width} = useWindowDimensions();
+  const {status, data, error, fetchNextPage} = useInfiniteQuery({
+    queryKey: ['trending', title, type],
+    queryFn: ({pageParam}) => fetchMovies(pageParam, type),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage, pages, lastPageParam) => lastPage.total_pages > pages.length ? pages.length + 1: undefined,
+  })
   useEffect(() => {
+    console.log(type);
+    
     navigation.setOptions({
       title: title,
       headerLeft: () => {
@@ -37,19 +63,31 @@ const AllScreen = ({
         );
       },
     });
-    MovieService.fetchMovies().then((movies) => {
-      setMovies(movies);
-    });
   }, []);
+
+  if(status === "pending") {
+    return <LoadingIndicator />
+  }
+
+  if(status === "error") {
+    return <EmptyContent title={error.message} icon="information-circle" />;
+  }
   return (
     <FlatList
-      data={movies}
+      data={data.pages.flatMap((page) => page.results)}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={Item}
-      numColumns={3}
+      renderItem={({item}) => <MovieCard movie={item} onPress={() => {}} style={{ width: (width - 30) /2}}/>}
+      numColumns={2}
       refreshControl={
         <RefreshControl onRefresh={() => {}} refreshing={false} />
       }
+      ItemSeparatorComponent={() => <View style={{height: 15, backgroundColor: "transparent"}}/>}
+      contentContainerStyle={{paddingHorizontal: 10}}
+      columnWrapperStyle={{gap: 10}}
+      style={{paddingBottom: 10, backgroundColor: "white"}}
+      onEndReached={() => fetchNextPage()}
+      onEndReachedThreshold={0.3}
+      ListFooterComponent={() => <ActivityIndicator />}
       ListHeaderComponent={
         <TextInput
           placeholder="Enter movie name"
@@ -65,31 +103,11 @@ const AllScreen = ({
   );
 };
 
-type ItemProps = { item: Movie };
-const Item = ({ item }: ItemProps) => {
-  const width = Dimensions.get("window").width;
-  return (
-    <View style={[styles.itemContainer, { width: (width - 30) / 3 }]}>
-      <Image
-        style={styles.image}
-        source={{
-          uri: `https://image.tmdb.org/t/p/w500/${item.poster_path}`,
-        }}
-      />
-      <Text numberOfLines={1} style={styles.itemTitle}>
-        {item.title ?? item.name}
-      </Text>
-      {item.release_date && (
-        <Text style={styles.itemDate}>{item.release_date}</Text>
-      )}
-    </View>
-  );
-};
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginVertical: 20,
+    backgroundColor: "white"
   },
   image: {
     height: 250,

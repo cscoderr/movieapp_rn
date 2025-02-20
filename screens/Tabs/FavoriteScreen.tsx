@@ -1,42 +1,61 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  Dimensions,
   FlatList,
   Image,
   StyleSheet,
   Text,
-  useWindowDimensions,
+  TouchableOpacity,
   View,
 } from "react-native";
 import { Movie } from "../../types";
-import MovieService from "../../services/MovieService";
+import { getFavoriteMovies } from "../../services/favorite";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { StackParamsList } from "../../navigators/RootNavigator";
+import EmptyContent from "../../components/EmptyContent";
 
-const FavoriteScreen = () => {
+const FavoriteScreen = ({
+  navigation,
+}: NativeStackScreenProps<StackParamsList>) => {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const width = useWindowDimensions().width;
+
   useEffect(() => {
-    MovieService.fetchMovies().then((movies) => {
+    getFavoriteMovies().then((movies) => {
       setMovies(movies);
     });
   }, []);
+
+  if (movies.length < 1) {
+    return <EmptyContent title="No Favorite Available" icon="bookmark" />;
+  }
+
   return (
     <FlatList
       data={movies}
       keyExtractor={(item) => item.id.toString()}
-      renderItem={Item}
-      ItemSeparatorComponent={({ item }) => (
-        <View style={{ height: 0.5, backgroundColor: "grey" }} />
+      renderItem={({ item }) => (
+        <Item
+          item={item}
+          onPress={() => navigation.push("Details", { movie: item })}
+        />
       )}
+      ItemSeparatorComponent={ItemSeperator}
       style={styles.container}
+      contentContainerStyle={{ paddingHorizontal: 10 }}
     />
   );
 };
 
-type ItemProps = { item: Movie };
-const Item = ({ item }: ItemProps) => {
-  const width = Dimensions.get("window").width;
+const ItemSeperator = ({ item }) => (
+  <View style={{ height: 10, backgroundColor: "transparent" }} />
+);
+
+type ItemProps = {
+  item: Movie;
+  onPress: () => void;
+};
+const Item = ({ item, onPress }: ItemProps) => {
   return (
-    <View style={styles.itemContainer}>
+    <TouchableOpacity style={styles.itemContainer} onPress={onPress}>
       <Image
         style={styles.image}
         source={{
@@ -54,7 +73,7 @@ const Item = ({ item }: ItemProps) => {
           {item.overview}
         </Text>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 };
 
@@ -65,7 +84,7 @@ const styles = StyleSheet.create({
   },
   image: {
     height: 120,
-    width: 100,
+    width: 80,
     resizeMode: "cover",
     borderRadius: 5,
   },
@@ -81,7 +100,6 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: "row",
     gap: 10,
-    margin: 10,
   },
   itemTitle: {
     fontSize: 16,

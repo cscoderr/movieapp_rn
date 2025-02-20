@@ -13,7 +13,7 @@ import AllScreen from "../screens/AllScreen";
 export type StackParamsList = {
   Main: undefined;
   Details: { movie: Movie };
-  All: { title: string };
+  All: { title: string, type: string };
 };
 const Stack = createNativeStackNavigator<StackParamsList>();
 

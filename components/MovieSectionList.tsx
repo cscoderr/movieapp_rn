@@ -11,17 +11,14 @@ import {
   View,
 } from "react-native";
 import { StackParamsList } from "../navigators/RootNavigator";
-import ImageViewWithProgess from "./ImageViewWithProgress";
-import { useEffect, useState } from "react";
-import MovieService from "../services/MovieService";
-import { create } from "zustand";
 import MovieShimmerList from "./MovieShimmerList";
 import { useQuery } from "@tanstack/react-query";
+import MovieCard from "./MovieCard";
 
 export enum MovieSectionType {
-  trending = "trending",
-  popularMovies = "popularMovies",
-  popularTV = "popularTV",
+  trending = "trending/movie/day",
+  popularMovies = "movie/popular",
+  popularTV = "tv/popular",
   similar = "similar",
 }
 
@@ -147,7 +144,7 @@ const MovieSectionList = ({ title, type, navigation }: Props) => {
     <View style={styles.container}>
       <View style={styles.headerText}>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("All", { title })}>
+        <TouchableOpacity onPress={() => navigation.navigate("All", { title: title, type: type })}>
           <Text>See all</Text>
         </TouchableOpacity>
       </View>
@@ -156,8 +153,8 @@ const MovieSectionList = ({ title, type, navigation }: Props) => {
       ) : (
         <FlatList
           renderItem={({ item }) => (
-            <Item
-              item={item}
+            <MovieCard
+              movie={item}
               onPress={() => navigation.push("Details", { movie: item })}
             />
           )}
@@ -167,6 +164,7 @@ const MovieSectionList = ({ title, type, navigation }: Props) => {
           ItemSeparatorComponent={ItemSeparator}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 10 }}
+          initialNumToRender={5}
         />
       )}
     </View>
@@ -176,26 +174,6 @@ const MovieSectionList = ({ title, type, navigation }: Props) => {
 const ItemSeparator = () => (
   <View style={{ width: 15, backgroundColor: "transparent" }} />
 );
-
-type ItemProps = { item: Movie; onPress: () => void };
-const Item = ({ item, onPress }: ItemProps) => {
-  return (
-    <TouchableOpacity onPress={onPress} style={styles.itemContainer}>
-      <ImageViewWithProgess
-        imageUri={`https://image.tmdb.org/t/p/w500/${item.poster_path}`}
-        progress={item.vote_average}
-      />
-      <Text numberOfLines={1} style={styles.itemTitle}>
-        {item.title ?? item.name}
-      </Text>
-      {(item.release_date || item.first_air_date) && (
-        <Text style={styles.itemDate}>
-          {item.release_date ?? item.first_air_date}
-        </Text>
-      )}
-    </TouchableOpacity>
-  );
-};
 
 const styles = StyleSheet.create({
   container: {
@@ -212,21 +190,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "800",
-  },
-  itemContainer: {
-    width: 170,
-    gap: 5,
-  },
-  itemTitle: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "black",
-    marginTop: 5,
-  },
-  itemDate: {
-    fontSize: 14,
-    fontWeight: "400",
-    color: "grey",
   },
 });
 

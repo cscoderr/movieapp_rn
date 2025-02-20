@@ -89,9 +89,9 @@ const Item = ({ item }: ItemProps) => {
         }}
       />
       <Text numberOfLines={1} style={styles.itemTitle}>
-        {item.original_name}
+        {item.name}
       </Text>
-      <Text style={styles.itemDate}>{item.name}</Text>
+      <Text style={styles.itemDate}>{item.character}</Text>
     </View>
   );
 };

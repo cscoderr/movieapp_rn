@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   View,
+  VirtualizedList,
 } from "react-native";
 import { StackParamsList } from "../navigators/RootNavigator";
 import { Cast, CastResponse, Movie, MovieResponse } from "../types";
@@ -22,6 +23,11 @@ import {
 } from "react-native-safe-area-context";
 import { useQuery } from "@tanstack/react-query";
 import CastListShimmer from "../components/CastListShimmer";
+import {
+  addMovieToFavorites,
+  isMovieInFavorites,
+  removeMovieFromStorage,
+} from "../services/favorite";
 
 function shuffle(array: Movie[]): Movie[] {
   let newArray = array.slice();
@@ -43,8 +49,17 @@ const DetailsScreen = ({
   route,
 }: NativeStackScreenProps<StackParamsList, "Details">) => {
   const movie = route.params.movie;
-
+  const [favorite, setFavorite] = useState(false);
   const { top } = useSafeAreaInsets();
+  const checkFavorite = async () => {
+    const isFavorite = await isMovieInFavorites(movie.id);
+    setFavorite(isFavorite);
+  };
+
+  useEffect(() => {
+    checkFavorite();
+  }, []);
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.imageContainer}>
@@ -57,11 +72,20 @@ const DetailsScreen = ({
 
           <View style={styles.circleButton}>
             <TouchableOpacity
-              onPress={() => {
-                console.log("Add to favorite");
+              onPress={async () => {
+                if (favorite) {
+                  await removeMovieFromStorage(movie.id);
+                } else {
+                  await addMovieToFavorites(movie);
+                }
+                await checkFavorite();
               }}
             >
-              <Ionicons name="bookmark-outline" size={24} color={"white"} />
+              <Ionicons
+                name={favorite ? "bookmark" : "bookmark-outline"}
+                size={24}
+                color={"white"}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -93,7 +117,7 @@ const DetailsScreen = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    position: "relative",
+    backgroundColor: "white"
   },
   imageContainer: {
     height: 300,

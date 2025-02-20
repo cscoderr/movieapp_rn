@@ -9,5 +9,6 @@ export default interface Cast {
   profile_path?: string;
   credit_id: string;
   department?: string;
+  character: string;
   job?: string;
 }
