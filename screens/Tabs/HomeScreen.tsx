@@ -1,32 +1,46 @@
 import MovieSectionList, {
   MovieSectionType,
 } from "../../components/MovieSectionList";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
 import { StackParamsList } from "../../navigators/RootNavigator";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { Ionicons } from "@expo/vector-icons";
 
 const HomeScreen = ({
   navigation,
-}: {
-  navigation: NativeStackNavigationProp<StackParamsList>;
-}) => {
+}: NativeStackScreenProps<StackParamsList>) => {
+  // const nav = useNavigation<NativeStackScreenProps<StackParamsList>>();
+
+  React.useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => {
+        return (
+          <TouchableOpacity
+            activeOpacity={0.5}
+            onPress={() => navigation.navigate("Settings")}
+          >
+            <Ionicons name="settings" size={24} />
+          </TouchableOpacity>
+        );
+      },
+    });
+  }, []);
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <MovieSectionList
         title="Trending Today"
         type={MovieSectionType.trending}
-        navigation={navigation}
       />
       <MovieSectionList
         title="Popular Movies"
         type={MovieSectionType.popularMovies}
-        navigation={navigation}
       />
-      <MovieSectionList
-        title="Popular TV"
-        type={MovieSectionType.popularTV}
-        navigation={navigation}
-      />
+      <MovieSectionList title="Popular TV" type={MovieSectionType.popularTV} />
     </ScrollView>
   );
 };

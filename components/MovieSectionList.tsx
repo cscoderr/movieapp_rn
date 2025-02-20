@@ -14,6 +14,7 @@ import { StackParamsList } from "../navigators/RootNavigator";
 import MovieShimmerList from "./MovieShimmerList";
 import { useQuery } from "@tanstack/react-query";
 import MovieCard from "./MovieCard";
+import { useNavigation } from "@react-navigation/native";
 
 export enum MovieSectionType {
   trending = "trending/movie/day",
@@ -124,9 +125,10 @@ type MovieState = {
 type Props = {
   title: string;
   type: MovieSectionType;
-  navigation: NativeStackNavigationProp<StackParamsList>;
 };
-const MovieSectionList = ({ title, type, navigation }: Props) => {
+const MovieSectionList = ({ title, type }: Props) => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<StackParamsList>>();
   const {
     isPending: loading,
     error,
@@ -144,7 +146,11 @@ const MovieSectionList = ({ title, type, navigation }: Props) => {
     <View style={styles.container}>
       <View style={styles.headerText}>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity onPress={() => navigation.navigate("All", { title: title, type: type })}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("All", { title: title, type: type })
+          }
+        >
           <Text>See all</Text>
         </TouchableOpacity>
       </View>

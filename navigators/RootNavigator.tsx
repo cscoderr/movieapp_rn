@@ -1,19 +1,15 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/Tabs/HomeScreen";
-import MoviesScreen from "../screens/Tabs/MoviesScreen";
-import TVShowsScreen from "../screens/Tabs/TvShowsScreen";
-import FavoriteScreen from "../screens/Tabs/FavoriteScreen";
-import { Ionicons } from "@expo/vector-icons";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import TabNavigator from "./TabNavigator";
 import DetailsScreen from "../screens/DetailsScreen";
 import { Movie } from "../types";
 import AllScreen from "../screens/AllScreen";
+import SettingsScreen from "../screens/Tabs/Settings";
 
 export type StackParamsList = {
   Main: undefined;
   Details: { movie: Movie };
-  All: { title: string, type: string };
+  All: { title: string; type: string };
+  Settings: undefined;
 };
 const Stack = createNativeStackNavigator<StackParamsList>();
 

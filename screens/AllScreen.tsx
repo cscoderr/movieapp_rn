@@ -25,6 +25,7 @@ import { useInfiniteQuery } from "@tanstack/react-query";
 import LoadingIndicator from "../components/LoadingIndicator";
 import MovieCard from "../components/MovieCard";
 import EmptyContent from "../components/EmptyContent";
+import { shuffle } from "../utils/shuffle";
 
 async function fetchMovies(page = 1, path: string): Promise<MovieResponse> {
   const response = await fetch(
@@ -34,7 +35,9 @@ async function fetchMovies(page = 1, path: string): Promise<MovieResponse> {
   if (!response.ok) {
     throw new Error('Unable to fetch movies');
   } 
-  return  response.json();
+  const json = await response.json() as MovieResponse;
+  json.results = shuffle(json.results)
+  return json;
 }
 
 const AllScreen = ({
@@ -44,7 +47,7 @@ const AllScreen = ({
   const title = route.params.title;
   const type = route.params.type;
   const {width} = useWindowDimensions();
-  const {status, data, error, fetchNextPage} = useInfiniteQuery({
+  const {status, data, error, fetchNextPage, isFetchingNextPage} = useInfiniteQuery({
     queryKey: ['trending', title, type],
     queryFn: ({pageParam}) => fetchMovies(pageParam, type),
     initialPageParam: 1,
@@ -87,7 +90,7 @@ const AllScreen = ({
       style={{paddingBottom: 10, backgroundColor: "white"}}
       onEndReached={() => fetchNextPage()}
       onEndReachedThreshold={0.3}
-      ListFooterComponent={() => <ActivityIndicator />}
+      ListFooterComponent={() => isFetchingNextPage ? <ActivityIndicator /> : null}
       ListHeaderComponent={
         <TextInput
           placeholder="Enter movie name"

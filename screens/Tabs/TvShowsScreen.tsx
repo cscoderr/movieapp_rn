@@ -2,41 +2,26 @@ import {
   ActivityIndicator,
   FlatList,
   StyleSheet,
-  Text,
   useWindowDimensions,
   View,
 } from "react-native";
-import { MovieResponse } from "../../types";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import MovieCard from "../../components/MovieCard";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackParamsList } from "../../navigators/RootNavigator";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import EmptyContent from "../../components/EmptyContent";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { TabBar, TabView } from "react-native-tab-view";
+import React from "react";
+import { useTVShows } from "../../hooks/useTVShows";
 
-async function fetchTV(page: number = 1): Promise<MovieResponse> {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/tv/popular?api_key=${process.env.EXPO_PUBLIC_API_KEY}&page=${page}`,
-    {
-      method: "GET",
-    }
-  );
-  if (!response.ok) {
-    throw new Error("An error occur while fetching movies");
-  }
-  return response.json();
-}
 
 type TVShowsProps = {
-  navigation: NativeStackNavigationProp<StackParamsList>
+  type: string;
+  navigation: NativeStackNavigationProp<StackParamsList>;
 }
-const TVShowsScreen = ({navigation}: TVShowsProps) => {
-  const { status, error, fetchNextPage, data, isFetchingNextPage } = useInfiniteQuery({
-    queryKey: ['tv'],
-    queryFn: ({pageParam}) => fetchTV(pageParam),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage, pages) => lastPage.total_pages > pages.length ? pages.length + 1 : undefined,
-  });
+const TVShowsRoute = ({navigation, type}: TVShowsProps) => {
+  const { status, error, fetchNextPage, data, isFetchingNextPage } = useTVShows(type);
   const {width} = useWindowDimensions();
 
   if(status === "pending") {
@@ -65,14 +50,48 @@ const TVShowsScreen = ({navigation}: TVShowsProps) => {
       onEndReached={() => fetchNextPage()}
       onEndReachedThreshold={0.3}
       style={{ paddingVertical: 15, backgroundColor: "white" }}
-      ListFooterComponent={() => {
-        if (isFetchingNextPage) {
-          return <ActivityIndicator />;
-        }
-      }}
+      ListFooterComponent={() => isFetchingNextPage ? <ActivityIndicator /> : null}
     />
   );
 };
+
+
+const renderScene = ({route, navigation}: {route, navigation: NativeStackNavigationProp<StackParamsList>}) => <TVShowsRoute type={route.key} navigation={navigation} />
+
+const routes = [
+{ key: 'popular', title: 'Popular' },
+{ key: 'airing_today', title: 'Airing Today' },
+{ key: 'on_the_air', title: 'On TV' },
+{ key: 'top_rated', title: 'Top Rated' },
+];
+
+const renderTabBar = props => (
+  <TabBar
+    {...props}
+    activeColor='tomato'
+    inactiveColor='grey'
+    pressOpacity={0.5}
+    gap={0}
+    indicatorStyle={{ backgroundColor: 'tomato' }}
+    style={{ backgroundColor: 'white', borderWidth: 0 }}
+  />
+);
+
+const TVShowsScreen = ({navigation}: NativeStackScreenProps<StackParamsList>) => {
+  const {width} = useWindowDimensions();
+  const [index, setIndex] = React.useState(0);
+  return (<SafeAreaView style={{flex: 1, backgroundColor: "white"}} edges={{bottom: "off", top: "additive"}}>
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={({route}) => renderScene({route, navigation})}
+      renderTabBar={renderTabBar}
+      onIndexChange={setIndex}
+      initialLayout={{ width: width }}
+      pagerStyle={{backgroundColor: "white"}}
+      // lazy
+    />
+  </SafeAreaView>)
+}
 
 
 const styles = StyleSheet.create({

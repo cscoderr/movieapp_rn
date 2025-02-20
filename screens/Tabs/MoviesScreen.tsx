@@ -1,69 +1,39 @@
-import React, { useEffect, useRef, useState } from "react";
+
 import {
   ActivityIndicator,
-  Dimensions,
   FlatList,
-  Image,
-  ScrollView,
   StyleSheet,
-  Text,
-  TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
 import { Movie, MovieResponse } from "../../types";
-import MovieService from "../../services/MovieService";
 import MovieCard from "../../components/MovieCard";
 import {
   NativeStackNavigationProp,
-  NativeStackNavigatorProps,
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import { StackParamsList } from "../../navigators/RootNavigator";
 import {
-  useQuery,
-  keepPreviousData,
-  useQueryClient,
-  useInfiniteQuery,
+  useInfiniteQuery
 } from "@tanstack/react-query";
-import MovieShimmerList from "../../components/MovieShimmerList";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import EmptyContent from "../../components/EmptyContent";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SceneMap, TabBar, TabView } from "react-native-tab-view";
+import React from "react";
+import { shuffle } from "../../utils/shuffle";
+import { fetchMoviesWithType } from "../../services/api";
+import { useMovies } from "../../hooks/useMovies";
 
-type FectchMoviesType = {
-  page?: number;
-};
-async function fetchMovies({
-  page = 1,
-}: FectchMoviesType): Promise<MovieResponse> {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/movie/popular?api_key=${process.env.EXPO_PUBLIC_API_KEY}&page=${page}`,
-    {
-      method: "GET",
-    }
-  );
-  if (!response.ok) {
-    throw new Error("An error occur while fetching movies");
-  }
-  return response.json();
-}
 
-type MoviewScreenProps = {
+
+type MoviewRouteProps = {
   navigation: NativeStackNavigationProp<StackParamsList>;
+  type: string;
 };
-const MoviesScreenRoute = ({ navigation }: MoviewScreenProps) => {
-  const firstTextRef = useRef(null);
+const MoviesRoute = ({navigation, type = 'popular'}: MoviewRouteProps) => {
   const { width } = useWindowDimensions();
-  const { status, error, fetchNextPage, isFetchingNextPage, data } =
-    useInfiniteQuery({
-      queryKey: ["movies"],
-      queryFn: ({ pageParam }) => fetchMovies({ page: pageParam }),
-      initialPageParam: 1,
-      getNextPageParam: (lastPage, pages) =>
-        lastPage.total_pages > pages.length ? pages.length + 1 : undefined,
-    });
+  const { status, error, fetchNextPage, isFetchingNextPage, data } = useMovies(type)
 
   if (status === "pending") {
     return <LoadingIndicator />
@@ -91,14 +61,47 @@ const MoviesScreenRoute = ({ navigation }: MoviewScreenProps) => {
       onEndReached={() => fetchNextPage()}
       onEndReachedThreshold={0.3}
       style={{ paddingVertical: 15,  backgroundColor: "white" }}
-      ListFooterComponent={() => {
-        if (isFetchingNextPage) {
-          return <ActivityIndicator />;
-        }
-      }}
+      ListFooterComponent={() => isFetchingNextPage ? <ActivityIndicator /> : null}
     />
   );
 };
+
+const renderScene = ({route, navigation}: {route: {key: string; title: string;}, navigation: NativeStackNavigationProp<StackParamsList>}) => <MoviesRoute type={route.key} navigation={navigation} />
+
+const routes = [
+{ key: 'popular', title: 'Popular' },
+{ key: 'now_playing', title: 'Now Playing' },
+{ key: 'upcoming', title: 'Upcoming' },
+{ key: 'top_rated', title: 'Top Rated' },
+];
+
+const renderTabBar = props => (
+  <TabBar
+    {...props}
+    activeColor='tomato'
+    inactiveColor='grey'
+    pressOpacity={0.5}
+    gap={0}
+    indicatorStyle={{ backgroundColor: 'tomato' }}
+    style={{ backgroundColor: 'white', borderWidth: 0 }}
+  />
+);
+
+const MoviesScreen = ({navigation}: NativeStackScreenProps<StackParamsList>) => {
+  const {width} = useWindowDimensions();
+  const [index, setIndex] = React.useState(0);
+  return (<SafeAreaView style={{flex: 1, backgroundColor: "white"}} edges={{bottom: "off", top: "additive"}}>
+    <TabView
+      navigationState={{ index, routes }}
+      renderScene={({route}) => renderScene({route, navigation})}
+      renderTabBar={renderTabBar}
+      onIndexChange={setIndex}
+      initialLayout={{ width: width }}
+      pagerStyle={{backgroundColor: "white"}}
+      // lazy
+    />
+  </SafeAreaView>)
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -126,49 +129,5 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
-
-
-const renderScene = SceneMap({
-  first: MoviesScreenRoute,
-  second: MoviesScreenRoute,
-  third: MoviesScreenRoute,
-  fourth: MoviesScreenRoute,
-});
-
-const routes = [
-{ key: 'first', title: 'Popular' },
-{ key: 'second', title: 'Now Playing' },
-{ key: 'third', title: 'Upcoming' },
-{ key: 'fourth', title: 'Top Rated' },
-];
-
-const renderTabBar = props => (
-  <TabBar
-    {...props}
-    activeColor='tomato'
-    inactiveColor='grey'
-    pressOpacity={0.5}
-    gap={0}
-    indicatorStyle={{ backgroundColor: 'tomato' }}
-    style={{ backgroundColor: 'white', borderWidth: 0 }}
-  />
-);
-
-const MoviesScreen = ({navigation}: NativeStackScreenProps<StackParamsList>) => {
-  const {width} = useWindowDimensions();
-  const [index, setIndex] = React.useState(0);
-  return (<SafeAreaView style={{flex: 1, backgroundColor: "white"}} edges={{bottom: "off", top: "additive"}}>
-    <TabView
-      navigationState={{ index, routes }}
-      renderScene={renderScene}
-      renderTabBar={renderTabBar}
-      onIndexChange={setIndex}
-      initialLayout={{ width: width }}
-      pagerStyle={{backgroundColor: "white"}}
-      lazy
-      swipeEnabled={false}
-    />
-  </SafeAreaView>)
-}
 
 export default MoviesScreen;
