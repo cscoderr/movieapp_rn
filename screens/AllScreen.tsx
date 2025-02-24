@@ -64,7 +64,6 @@ const AllScreen = ({
       },
       headerTransparent: false,
     });
-    //headerBackButtonDisplayMode: "minimal",
   }, []);
 
   if (status === "pending") {
@@ -81,7 +80,9 @@ const AllScreen = ({
       renderItem={({ item }) => (
         <MovieCard
           movie={item}
-          onPress={() => {}}
+          onPress={() => {
+            navigation.navigate("Details", { movie: item });
+          }}
           style={{ width: (width - 30) / 2 }}
         />
       )}
