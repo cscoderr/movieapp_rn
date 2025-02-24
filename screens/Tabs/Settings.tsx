@@ -56,7 +56,7 @@ const Section = ({
   title?: string | React.ReactNode;
   footer?: string | React.ReactNode;
 }) => {
-  const elementChildren = React.Children.map(children, (child, index) => {
+  const childrenWithSeperator = React.Children.map(children, (child, index) => {
     if (!React.isValidElement(child)) {
       return null;
     }
@@ -121,7 +121,7 @@ const Section = ({
         props.style,
       ]}
     >
-      {elementChildren}
+      {childrenWithSeperator}
     </View>
   );
 

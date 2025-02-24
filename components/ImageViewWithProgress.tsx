@@ -23,7 +23,7 @@ const ImageViewWithProgess = ({
       } else {
         return "#CF004E";
       }
-    }
+    };
     const backgroundFn = (): string => {
       if (progress >= 7) {
         return "#19361E";
@@ -32,10 +32,10 @@ const ImageViewWithProgess = ({
       } else {
         return "#440C28";
       }
-    }
-    setProgressColor(progressFn())
-    setBackgroundColor(backgroundFn())
-  }, [progress])
+    };
+    setProgressColor(progressFn());
+    setBackgroundColor(backgroundFn());
+  }, [progress]);
 
   return (
     <View style={styles.container}>
@@ -45,9 +45,13 @@ const ImageViewWithProgess = ({
           source={{
             uri: imageUri,
           }}
-          onLoadEnd={() =>  setImageLoading(false)}
+          onLoadEnd={() => setImageLoading(false)}
         />
-        {imageLoading && <ActivityIndicator style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}/>}
+        {imageLoading && (
+          <ActivityIndicator
+            style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+          />
+        )}
       </View>
       <View style={styles.progressViewContainer}>
         <AnimatedCircularProgress

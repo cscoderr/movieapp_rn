@@ -16,20 +16,6 @@ const HomeScreen = ({
 }: NativeStackScreenProps<StackParamsList>) => {
   // const nav = useNavigation<NativeStackScreenProps<StackParamsList>>();
 
-  React.useEffect(() => {
-    navigation.setOptions({
-      headerRight: () => {
-        return (
-          <TouchableOpacity
-            activeOpacity={0.5}
-            onPress={() => navigation.navigate("Settings")}
-          >
-            <Ionicons name="settings" size={24} />
-          </TouchableOpacity>
-        );
-      },
-    });
-  }, []);
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <MovieSectionList

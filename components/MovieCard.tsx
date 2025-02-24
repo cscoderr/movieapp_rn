@@ -32,7 +32,7 @@ const MovieCard = ({ movie, onPress, style }: MovieCardProps) => {
             {movie.release_date ?? movie.first_air_date}
           </Text>
         )}
-        </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 };

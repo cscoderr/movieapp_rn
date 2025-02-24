@@ -99,7 +99,7 @@ const Item = ({ item }: ItemProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 20,
+    // marginTop: 20,
   },
   image: {
     height: 120,
@@ -110,7 +110,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "800",
-    margin: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
   },
   itemContainer: {
     width: 120,
