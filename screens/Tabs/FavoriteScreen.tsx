@@ -1,36 +1,51 @@
-import { useEffect, useRef, useState } from "react";
 import {
   FlatList,
   Image,
   StyleSheet,
   Text,
   TouchableOpacity,
+  useWindowDimensions,
   View,
 } from "react-native";
 import { Movie } from "../../types";
-import { getFavoriteMovies } from "../../services/favorite";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { StackParamsList } from "../../navigators/RootNavigator";
 import EmptyContent from "../../components/EmptyContent";
+import { useFavoriteStore } from "../../stores/useFavoriteStore";
+import { TabBar, TabView } from "react-native-tab-view";
+import { useNavigation } from "@react-navigation/native";
+import React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const FavoriteScreen = ({
+const FavoriteRoute = ({
   navigation,
-}: NativeStackScreenProps<StackParamsList>) => {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  type,
+}: {
+  navigation: NativeStackNavigationProp<StackParamsList>;
+  type: string;
+}) => {
+  const movies = useFavoriteStore((state) => state.movies);
+  const favoriteMovies = React.useMemo(() => {
+    if (type === "all") return movies.toReversed();
+    if (type === "movie")
+      return movies.filter((movie) => movie.title != null).toReversed();
+    if (type === "tv")
+      return movies.filter((movie) => movie.name != null).toReversed();
+    return [];
+  }, [type, movies]);
 
-  useEffect(() => {
-    getFavoriteMovies().then((movies) => {
-      setMovies(movies);
-    });
-  }, []);
-
-  if (movies.length < 1) {
-    return <EmptyContent title="No Favorite Available" icon="bookmark" />;
-  }
-
-  return (
+  return favoriteMovies.length <= 0 ? (
+    <EmptyContent
+      title={`No Favorite${
+        type !== "all"
+          ? ` ${type.substring(0, 1).toUpperCase()}${type.substring(1)}`
+          : ""
+      } Available`}
+      icon="heart"
+    />
+  ) : (
     <FlatList
-      data={movies}
+      data={favoriteMovies}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <Item
@@ -67,7 +82,9 @@ const Item = ({ item, onPress }: ItemProps) => {
           {item.title ?? item.name}
         </Text>
         {item.release_date && (
-          <Text style={styles.itemDate}>{item.release_date}</Text>
+          <Text style={styles.itemDate}>
+            {item.release_date ?? item.first_air_date}
+          </Text>
         )}
         <Text numberOfLines={3} style={styles.itemOverview}>
           {item.overview}
@@ -77,10 +94,60 @@ const Item = ({ item, onPress }: ItemProps) => {
   );
 };
 
+const renderScene = ({
+  route,
+  navigation,
+}: {
+  route: { key: string; title: string };
+  navigation: NativeStackNavigationProp<StackParamsList>;
+}) => <FavoriteRoute navigation={navigation} type={route.key} />;
+
+const routes = [
+  { key: "all", title: "All" },
+  { key: "movie", title: "Movie" },
+  { key: "tv", title: "TV" },
+];
+
+const renderTabBar = (props) => (
+  <TabBar
+    {...props}
+    activeColor="tomato"
+    inactiveColor="grey"
+    pressOpacity={0.5}
+    gap={0}
+    indicatorStyle={{ backgroundColor: "tomato" }}
+    style={{ backgroundColor: "white", borderWidth: 0 }}
+  />
+);
+
+const FavoriteScreen = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<StackParamsList>>();
+  const { width } = useWindowDimensions();
+  const [index, setIndex] = React.useState(0);
+  return (
+    <SafeAreaView
+      edges={{ bottom: "off", top: "additive" }}
+      style={{ flex: 1, backgroundColor: "white" }}
+    >
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={({ route }) => renderScene({ route, navigation })}
+        renderTabBar={renderTabBar}
+        onIndexChange={setIndex}
+        initialLayout={{ width: width }}
+        pagerStyle={{ backgroundColor: "white" }}
+        // lazy
+      />
+    </SafeAreaView>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "white",
+    paddingVertical: 10,
   },
   image: {
     height: 120,

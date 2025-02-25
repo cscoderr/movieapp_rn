@@ -1,7 +1,4 @@
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Cast, Movie } from "../types";
-import { FlatList, Image, StyleSheet, Text, View } from "react-native";
-import { StackParamsList } from "../navigators/RootNavigator";
+import { FlatList, StyleSheet, View } from "react-native";
 import ShimmerPlaceholder from "react-native-shimmer-placeholder";
 import { LinearGradient } from "expo-linear-gradient";
 

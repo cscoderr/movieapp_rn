@@ -44,7 +44,7 @@ export const removeMovieFromStorage = async (
 ): Promise<boolean> => {
   const currentFavorites = await getFavoriteMovies();
   const updatedFavorites = currentFavorites.filter(
-    (movie, _) => movie.id != movie.id
+    (movie, _) => movie.id != movieId
   );
   return saveFavoriteMovies(updatedFavorites);
 };

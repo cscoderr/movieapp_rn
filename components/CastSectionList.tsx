@@ -1,46 +1,15 @@
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
-import { Cast, CastResponse, Movie } from "../types";
-import {
-  FlatList,
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { StackParamsList } from "../navigators/RootNavigator";
+import { Cast } from "../types";
+import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
 import CastListShimmer from "./CastListShimmer";
+import { fetchCasts } from "../services/api";
 
-async function fetchCasts(type: string, id: number): Promise<Cast[]> {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/${type}/${id}/credits?api_key=${process.env.EXPO_PUBLIC_API_KEY}`,
-    {
-      method: "GET",
-    }
-  );
-  if (response.ok) {
-    const json = await response.json();
-    const result = json as CastResponse;
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    return result.cast;
-  } else {
-    console.log(`Error ${response.status}`);
-    return [];
-  }
-}
-
-type Props = {
+type CastSectionListProps = {
   title: string;
   id: number;
   type: string;
 };
-const CastSectionList = ({ title, id, type }: Props) => {
+const CastSectionList = ({ title, id, type }: CastSectionListProps) => {
   const {
     isPending: loading,
     error,
@@ -55,7 +24,9 @@ const CastSectionList = ({ title, id, type }: Props) => {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      {(loading || casts.length > 0) && (
+        <Text style={styles.title}>{title}</Text>
+      )}
       {loading ? (
         <CastListShimmer />
       ) : (
@@ -65,7 +36,6 @@ const CastSectionList = ({ title, id, type }: Props) => {
           keyExtractor={(item) => item.id.toString()}
           horizontal={true}
           showsHorizontalScrollIndicator={false}
-          // style={styles.listContent}
           contentContainerStyle={{ paddingHorizontal: 10 }}
           ItemSeparatorComponent={ItemSeparator}
         />
@@ -91,7 +61,9 @@ const Item = ({ item }: ItemProps) => {
       <Text numberOfLines={1} style={styles.itemTitle}>
         {item.name}
       </Text>
-      <Text style={styles.itemDate}>{item.character}</Text>
+      <Text numberOfLines={2} style={styles.itemDate}>
+        {item.character}
+      </Text>
     </View>
   );
 };
@@ -99,7 +71,6 @@ const Item = ({ item }: ItemProps) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // marginTop: 20,
   },
   image: {
     height: 120,
@@ -110,14 +81,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "800",
-    marginHorizontal: 10,
-    marginTop: 10,
+    margin: 10,
   },
   itemContainer: {
-    width: 120,
     gap: 5,
     justifyContent: "center",
     alignItems: "center",
+    maxWidth: 120,
   },
   itemTitle: {
     fontSize: 14,

@@ -5,8 +5,9 @@ import TVShowsScreen from "../screens/Tabs/TvShowsScreen";
 import FavoriteScreen from "../screens/Tabs/FavoriteScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { ComponentProps } from "react";
-import { StyleProp, TextStyle, ViewStyle } from "react-native";
+import { Platform, StyleProp, TextStyle, ViewStyle } from "react-native";
 import SettingsScreen from "../screens/Tabs/Settings";
+import { SymbolView } from "expo-symbols";
 
 export type TabParamsList = {
   Home: undefined;
@@ -30,10 +31,18 @@ const TabNavigator = () => {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ focused, size, color }) => (
-            <Ionicons
-              name={focused ? "home" : "home-outline"}
-              size={size}
-              color={color}
+            <SymbolView
+              name={focused ? "house.fill" : "house"}
+              style={{ width: 28, height: 28 }}
+              type="hierarchical"
+              tintColor={color}
+              fallback={
+                <Ionicons
+                  name={focused ? "home" : "home-outline"}
+                  size={size}
+                  color={color}
+                />
+              }
             />
           ),
         }}
@@ -44,10 +53,18 @@ const TabNavigator = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
-            <Ionicons
-              name={focused ? "videocam" : "videocam-outline"}
-              size={size}
-              color={color}
+            <SymbolView
+              name={focused ? "film.fill" : "film"}
+              style={{ width: 28, height: 28 }}
+              type="hierarchical"
+              tintColor={color}
+              fallback={
+                <Ionicons
+                  name={focused ? "videocam" : "videocam-outline"}
+                  size={size}
+                  color={color}
+                />
+              }
             />
           ),
         }}
@@ -58,10 +75,18 @@ const TabNavigator = () => {
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
-            <Ionicons
-              name={focused ? "tv" : "tv-outline"}
-              size={size}
-              color={color}
+            <SymbolView
+              name={focused ? "tv.fill" : "tv"}
+              style={{ width: 28, height: 28 }}
+              type="hierarchical"
+              tintColor={color}
+              fallback={
+                <Ionicons
+                  name={focused ? "tv" : "tv-outline"}
+                  size={size}
+                  color={color}
+                />
+              }
             />
           ),
         }}
@@ -70,11 +95,20 @@ const TabNavigator = () => {
         name="Favorites"
         component={FavoriteScreen}
         options={{
+          headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
-            <Ionicons
-              name={focused ? "bookmark" : "bookmark-outline"}
-              size={size}
-              color={color}
+            <SymbolView
+              name={focused ? "heart.fill" : "heart"}
+              style={{ width: 28, height: 28 }}
+              type="hierarchical"
+              tintColor={color}
+              fallback={
+                <Ionicons
+                  name={focused ? "heart" : "heart-outline"}
+                  size={size}
+                  color={color}
+                />
+              }
             />
           ),
         }}
@@ -85,10 +119,18 @@ const TabNavigator = () => {
         options={{
           headerShown: true,
           tabBarIcon: ({ focused, size, color }) => (
-            <Ionicons
-              name={focused ? "settings" : "settings-outline"}
-              size={size}
-              color={color}
+            <SymbolView
+              name={focused ? "gearshape.fill" : "gearshape"}
+              style={{ width: 28, height: 28 }}
+              type="hierarchical"
+              tintColor={color}
+              fallback={
+                <Ionicons
+                  name={focused ? "settings" : "settings-outline"}
+                  size={size}
+                  color={color}
+                />
+              }
             />
           ),
         }}

@@ -1,36 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
-  RefreshControl,
   StyleSheet,
-  TextInput,
-  TouchableOpacity,
   useWindowDimensions,
   View,
 } from "react-native";
-import { MovieResponse } from "../types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { StackParamsList } from "../navigators/RootNavigator";
-import { Ionicons } from "@expo/vector-icons";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import LoadingIndicator from "../components/LoadingIndicator";
 import MovieCard from "../components/MovieCard";
 import EmptyContent from "../components/EmptyContent";
-import { shuffle } from "../utils/shuffle";
-
-async function fetchMovies(page = 1, path: string): Promise<MovieResponse> {
-  const response = await fetch(
-    `https://api.themoviedb.org/3/${path}?api_key=${process.env.EXPO_PUBLIC_API_KEY}&page=${page}`,
-    { method: "GET" }
-  );
-  if (!response.ok) {
-    throw new Error("Unable to fetch movies");
-  }
-  const json = (await response.json()) as MovieResponse;
-  json.results = shuffle(json.results);
-  return json;
-}
+import { fetchDataWithPath } from "../services/api";
 
 const AllScreen = ({
   route,
@@ -42,14 +24,28 @@ const AllScreen = ({
   const { status, data, error, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["trending", title, type],
-      queryFn: ({ pageParam }) => fetchMovies(pageParam, type),
+      queryFn: ({ pageParam }) => fetchDataWithPath(type, pageParam),
       initialPageParam: 1,
       getNextPageParam: (lastPage, pages, lastPageParam) =>
         lastPage.total_pages > pages.length ? pages.length + 1 : undefined,
     });
+  const [query, setQuery] = useState<string>("");
+  const queryData = useMemo(() => {
+    if (status === "pending" || status === "error") return [];
+    if (query == "") {
+      return data.pages.flatMap((moviesResponse) => moviesResponse.results);
+    } else {
+      const movies = data.pages.flatMap(
+        (moviesResponse) => moviesResponse.results
+      );
+      return movies.filter(
+        (movie) =>
+          movie.name?.toLocaleLowerCase().includes(query.toLocaleLowerCase()) ||
+          movie.title?.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+      );
+    }
+  }, [query, data]);
   useEffect(() => {
-    console.log(type);
-
     navigation.setOptions({
       title: title,
       headerLargeTitle: true,
@@ -58,9 +54,8 @@ const AllScreen = ({
       headerSearchBarOptions: {
         inputType: "text",
         placeholder: "Enter your search",
-        // hideWhenScrolling: true,
-        onChangeText: (text) => {},
-        onSearchButtonPress: (e) => {},
+        onChangeText: (event) => setQuery(event.nativeEvent.text),
+        onSearchButtonPress: (event) => setQuery(event.nativeEvent.text),
       },
       headerTransparent: false,
     });
@@ -73,9 +68,13 @@ const AllScreen = ({
   if (status === "error") {
     return <EmptyContent title={error.message} icon="information-circle" />;
   }
+
+  if (query != "" && queryData.length < 1) {
+    return <EmptyContent title={`${query} not found`} icon="search-circle" />;
+  }
   return (
     <FlatList
-      data={data.pages.flatMap((page) => page.results)}
+      data={queryData}
       keyExtractor={(item) => item.id.toString()}
       renderItem={({ item }) => (
         <MovieCard
@@ -87,16 +86,13 @@ const AllScreen = ({
         />
       )}
       numColumns={2}
-      refreshControl={
-        <RefreshControl onRefresh={() => {}} refreshing={false} />
-      }
       ItemSeparatorComponent={() => (
         <View style={{ height: 15, backgroundColor: "transparent" }} />
       )}
       contentContainerStyle={{ paddingHorizontal: 10 }}
       columnWrapperStyle={{ gap: 10 }}
       style={{ paddingVertical: 10, backgroundColor: "white" }}
-      onEndReached={() => fetchNextPage()}
+      onEndReached={query != "" ? () => {} : () => fetchNextPage()}
       onEndReachedThreshold={0.3}
       ListFooterComponent={() =>
         isFetchingNextPage ? <ActivityIndicator /> : null

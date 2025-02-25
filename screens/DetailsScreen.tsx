@@ -1,5 +1,6 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
+  Alert,
   Image,
   Linking,
   ScrollView,
@@ -7,68 +8,56 @@ import {
   Text,
   TouchableOpacity,
   View,
-  VirtualizedList,
 } from "react-native";
 import { StackParamsList } from "../navigators/RootNavigator";
-import { Cast, CastResponse, Movie, MovieResponse } from "../types";
 import { Ionicons } from "@expo/vector-icons";
-import MovieSectionList, {
-  MovieSectionType,
-} from "../components/MovieSectionList";
-import { useEffect, useMemo, useState } from "react";
-import MovieService from "../services/MovieService";
+import { useCallback, useMemo } from "react";
 import CastSectionList from "../components/CastSectionList";
 import ImageView from "../components/ImageView";
-import {
-  SafeAreaView,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import { useQuery } from "@tanstack/react-query";
-import CastListShimmer from "../components/CastListShimmer";
-import {
-  addMovieToFavorites,
-  isMovieInFavorites,
-  removeMovieFromStorage,
-} from "../services/favorite";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { LinearGradient } from "expo-linear-gradient";
-import { StatusBar } from "expo-status-bar";
+import { useFavoriteStore } from "../stores/useFavoriteStore";
+import RecommendationsList from "../components/RecommendationsList";
 
 const DetailsScreen = ({
   navigation,
   route,
 }: NativeStackScreenProps<StackParamsList, "Details">) => {
   const movie = route.params.movie;
-  const [favorite, setFavorite] = useState(false);
   const { top } = useSafeAreaInsets();
-  const checkFavorite = async () => {
-    const isFavorite = await isMovieInFavorites(movie.id);
-    setFavorite(isFavorite);
-  };
-
-  const progressColor = useMemo(() => {
-    if (movie.vote_average >= 7) {
-      return "#26CA67";
-    } else if (movie.vote_average >= 4) {
-      return "#C9CF26";
+  const setFavoriteMovie = useFavoriteStore((state) => state.setMovie);
+  const removeFavoriteMovies = useFavoriteStore((state) => state.removeMovie);
+  const isFavorite = useFavoriteStore((state) => state.checkMovie(movie.id));
+  const toogleFavorite = useCallback(() => {
+    if (isFavorite) {
+      removeFavoriteMovies(movie.id);
     } else {
-      return "#CF004E";
+      setFavoriteMovie(movie);
+    }
+  }, [movie.id, isFavorite, removeFavoriteMovies, setFavoriteMovie]);
+  const handleOpenURL = useCallback(async () => {
+    const url = `https://www.themoviedb.org/${
+      movie.title == null ? "tv" : "movie"
+    }/${movie.id}`;
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert("Error", "Cannot open URL");
     }
   }, [movie]);
+  const progressColor = useMemo(() => {
+    if (movie.vote_average >= 7) return "#26CA67";
+    if (movie.vote_average >= 4) return "#C9CF26";
+    return "#CF004E";
+  }, [movie.vote_average]);
 
   const backgroundColor = useMemo(() => {
-    if (movie.vote_average >= 7) {
-      return "#19361E";
-    } else if (movie.vote_average >= 4) {
-      return "#322F0D";
-    } else {
-      return "#440C28";
-    }
-  }, [movie]);
-
-  useEffect(() => {
-    checkFavorite();
-  }, []);
+    if (movie.vote_average >= 7) return "#19361E";
+    if (movie.vote_average >= 4) return "#322F0D";
+    return "#440C28";
+  }, [movie.vote_average]);
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
@@ -81,18 +70,9 @@ const DetailsScreen = ({
           </View>
 
           <View style={styles.circleButton}>
-            <TouchableOpacity
-              onPress={async () => {
-                if (favorite) {
-                  await removeMovieFromStorage(movie.id);
-                } else {
-                  await addMovieToFavorites(movie);
-                }
-                await checkFavorite();
-              }}
-            >
+            <TouchableOpacity onPress={toogleFavorite}>
               <Ionicons
-                name={favorite ? "bookmark" : "bookmark-outline"}
+                name={isFavorite ? "heart" : "heart-outline"}
                 size={24}
                 color={"white"}
               />
@@ -220,15 +200,7 @@ const DetailsScreen = ({
             bottom: -25,
           }}
         >
-          <TouchableOpacity
-            onPress={() => {
-              Linking.openURL(
-                `https://www.themoviedb.org/${
-                  movie.title == null ? "tv" : "movie"
-                }/${movie.id}`
-              );
-            }}
-          >
+          <TouchableOpacity onPress={handleOpenURL}>
             <Ionicons name="play" size={24} color={"white"} />
           </TouchableOpacity>
         </View>
@@ -239,9 +211,9 @@ const DetailsScreen = ({
         id={movie.id}
         type={movie.title == null ? "tv" : "movie"}
       />
-      <MovieSectionList
-        title="Recommendations"
-        type={MovieSectionType.popularMovies}
+      <RecommendationsList
+        type={movie.title ? "movie" : "tv"}
+        movieId={movie.id}
       />
     </ScrollView>
   );
@@ -253,10 +225,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   imageContainer: {
-    // height: 400,
     width: "100%",
     padding: 15,
-    // marginBottom: 80,
   },
   backdropImage: {
     position: "absolute",

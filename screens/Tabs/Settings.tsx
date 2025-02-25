@@ -1,15 +1,26 @@
 import React from "react";
 import {
+  Alert,
+  Button,
+  Linking,
   ScrollView,
-  StyleSheet,
   Text,
   TextProps,
   View,
   ViewProps,
 } from "react-native";
 import * as AppleColors from "@bacons/apple-colors";
+import { Ionicons } from "@expo/vector-icons";
 
 const SettingsScreen = () => {
+  const handleOpenURL = React.useCallback(async (url: string) => {
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      Alert.alert("Error", "Cannot open URL");
+    }
+  }, []);
   return (
     <ScrollView
       contentContainerStyle={{
@@ -18,32 +29,74 @@ const SettingsScreen = () => {
         paddingBottom: 64,
       }}
     >
-      <Section title="App Config">
-        <CsText trailing="Trailing">Cs is saying Hello</CsText>
-        <Text>Hello here</Text>
-        <Text>Hello here</Text>
-        <Text>Hello here</Text>
+      <Section title="App">
+        <RNText
+          trailing={
+            <Button
+              title="Github"
+              onPress={() =>
+                handleOpenURL("https://github.com/cscoderr/movieapp_rn")
+              }
+            />
+          }
+        >
+          Source Code
+        </RNText>
       </Section>
 
-      <Section title="About">
-        <CsText trailing="Trailing">Cs is saying Hello</CsText>
-        <Text>Hello here</Text>
-        <Text>Hello here</Text>
-        <Text>Hello here</Text>
-      </Section>
-
-      <Section
-        title="Social Medias"
-        footer="Check out my website and the project source code"
-      >
-        <CsText trailing="tomiwaidowu.dev">Website</CsText>
-        <CsText trailing="cscoderr">Github</CsText>
+      <Section title="About Me" footer="Connect with me on all social medias">
+        <RNText
+          leading={
+            <Ionicons name="globe" size={24} color={AppleColors.label} />
+          }
+          trailing="tomiwaidowu.dev"
+        >
+          Website
+        </RNText>
+        <RNText
+          leading={
+            <Ionicons name="logo-github" size={24} color={AppleColors.label} />
+          }
+          trailing={
+            <Button
+              title="cscoderr"
+              onPress={() => handleOpenURL("https://github.com/cscoderr")}
+            />
+          }
+        >
+          Github
+        </RNText>
+        <RNText
+          leading={
+            <Ionicons name="logo-twitter" size={24} color={AppleColors.label} />
+          }
+          trailing="cscoderr"
+        >
+          X(Twitter)
+        </RNText>
+        <RNText
+          leading={
+            <Ionicons
+              name="logo-linkedin"
+              size={24}
+              color={AppleColors.label}
+            />
+          }
+          trailing="Tomiwa Idowu"
+        >
+          Linkedin
+        </RNText>
       </Section>
     </ScrollView>
   );
 };
 
-const CsText = (props: TextProps & { trailing?: string }) => {
+const RNText = (
+  props: TextProps & {
+    trailing?: string | React.ReactElement;
+    leading?: string | React.ReactElement;
+  }
+) => {
   return <Text {...props} dynamicTypeRamp="body" />;
 };
 
@@ -62,13 +115,33 @@ const Section = ({
     }
     const isLastChild = index === React.Children.count(children) - 1;
 
-    if (child.type === Text || child.type === CsText) {
+    if (child.type === Text || child.type === RNText) {
       child = React.cloneElement(child, {
         ...child.props,
         dynamicTypeRamp: "body",
         numberOfLines: 1,
         style: [{ fontSize: 17, color: AppleColors.label }, child.props.style],
       });
+
+      const leadingView = (() => {
+        if (!child.props.leading) {
+          return;
+        }
+
+        return React.Children.map(child.props.leading, (child, index) => {
+          if (typeof child === "string") {
+            return (
+              <RNText
+                dynamicTypeRamp="body"
+                style={{ color: AppleColors.secondaryLabel }}
+              >
+                {child}
+              </RNText>
+            );
+          }
+          return child;
+        });
+      })();
 
       const trailingView = (() => {
         if (!child.props.trailing) {
@@ -77,12 +150,12 @@ const Section = ({
         return React.Children.map(child.props.trailing, (child, index) => {
           if (typeof child === "string") {
             return (
-              <CsText
+              <RNText
                 dynamicTypeRamp="body"
                 style={{ color: AppleColors.secondaryLabel }}
               >
                 {child}
-              </CsText>
+              </RNText>
             );
           }
           return child;
@@ -92,6 +165,9 @@ const Section = ({
       if (trailingView) {
         child = (
           <HStack>
+            {leadingView && (
+              <View style={{ marginEnd: 16 }}>{leadingView}</View>
+            )}
             {child}
             {trailingView && <Spacer />}
             {trailingView}
@@ -131,7 +207,7 @@ const Section = ({
   return (
     <View>
       {title && (
-        <CsText
+        <RNText
           dynamicTypeRamp="footnote"
           style={{
             textTransform: "uppercase",
@@ -142,11 +218,11 @@ const Section = ({
           }}
         >
           {title}
-        </CsText>
+        </RNText>
       )}
       {body}
       {footer && (
-        <CsText
+        <RNText
           dynamicTypeRamp="footnote"
           style={{
             paddingHorizontal: 20,
@@ -156,7 +232,7 @@ const Section = ({
           }}
         >
           {footer}
-        </CsText>
+        </RNText>
       )}
     </View>
   );
@@ -177,7 +253,19 @@ const Seperator = () => {
 };
 
 const HStack = (props: ViewProps) => {
-  return <View {...props} style={[{ flexDirection: "row" }, props.style]} />;
+  return (
+    <View
+      {...props}
+      style={[
+        {
+          flexDirection: "row",
+          justifyContent: "center",
+          alignItems: "center",
+        },
+        props.style,
+      ]}
+    />
+  );
 };
 
 const VStack = (props: ViewProps) => {

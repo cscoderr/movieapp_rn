@@ -1,11 +1,10 @@
 import { Ionicons } from "@expo/vector-icons";
-import { IconProps } from "@expo/vector-icons/build/createIconSet";
 import { ComponentProps } from "react";
-import { Text, View, ViewProps, ViewStyle } from "react-native";
+import { Text, View } from "react-native";
 
 type EmptyContentProps = {
   title: string;
-  icon: ComponentProps<typeof Ionicons>['name']
+  icon: ComponentProps<typeof Ionicons>["name"];
 };
 
 const EmptyContent = ({ title, icon }: EmptyContentProps) => {

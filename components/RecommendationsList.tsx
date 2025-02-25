@@ -1,32 +1,17 @@
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
-import { Movie, MovieResponse } from "../types";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 import { StackParamsList } from "../navigators/RootNavigator";
 import MovieShimmerList from "./MovieShimmerList";
 import { useQuery } from "@tanstack/react-query";
 import MovieCard from "./MovieCard";
 import { useNavigation } from "@react-navigation/native";
-import { fetchDataWithPath } from "../services/api";
+import { fetchSimilarMoviesorTv } from "../services/api";
 
-export enum MovieSectionType {
-  trending = "trending/movie/day",
-  popularMovies = "movie/popular",
-  popularTV = "tv/popular",
-}
-type MovieSectionListProps = {
-  title: string;
-  path: MovieSectionType;
+type RecommendationsListProps = {
+  movieId: number;
+  type: string;
 };
-const MovieSectionList = ({ title, path }: MovieSectionListProps) => {
+const RecommendationsList = ({ movieId, type }: RecommendationsListProps) => {
   const navigation =
     useNavigation<NativeStackNavigationProp<StackParamsList>>();
   const {
@@ -34,11 +19,8 @@ const MovieSectionList = ({ title, path }: MovieSectionListProps) => {
     error,
     data: movies,
   } = useQuery({
-    queryKey: ["fetchMovies", path],
-    queryFn: async () => {
-      const movieResponse = await fetchDataWithPath(path);
-      return movieResponse.results;
-    },
+    queryKey: ["fetchSimilarMoviesorTv", type, movieId],
+    queryFn: async () => fetchSimilarMoviesorTv(type, movieId),
   });
 
   if (error) {
@@ -47,16 +29,7 @@ const MovieSectionList = ({ title, path }: MovieSectionListProps) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerText}>
-        <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity
-          onPress={() =>
-            navigation.navigate("All", { title: title, type: path })
-          }
-        >
-          <Text>See all</Text>
-        </TouchableOpacity>
-      </View>
+      <Text style={styles.title}>Recommendations</Text>
       {loading ? (
         <MovieShimmerList />
       ) : (
@@ -99,7 +72,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "800",
+    marginHorizontal: 15,
+    marginBottom: 10,
   },
 });
 
-export default MovieSectionList;
+export default RecommendationsList;
