@@ -50,7 +50,7 @@ const SettingsScreen = () => {
           leading={
             <Ionicons name="globe" size={24} color={AppleColors.label} />
           }
-          trailing="tomiwaidowu.dev"
+          trailing="tomiwaidowu.com"
         >
           Website
         </RNText>
