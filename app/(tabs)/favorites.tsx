@@ -9,13 +9,14 @@ import {
 } from "react-native";
 import { Movie } from "../../types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { StackParamsList } from "../../navigators/RootNavigator";
+import { StackParamsList } from "../../types/StackParamsList";
 import EmptyContent from "../../components/EmptyContent";
 import { useFavoriteStore } from "../../stores/useFavoriteStore";
 import { TabBar, TabView } from "react-native-tab-view";
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import RNTouchableBounce from "react-native/Libraries/Components/Touchable/TouchableBounce";
 
 const FavoriteRoute = ({
   navigation,
@@ -33,7 +34,6 @@ const FavoriteRoute = ({
       return movies.filter((movie) => movie.name != null).toReversed();
     return [];
   }, [type, movies]);
-
   return favoriteMovies.length <= 0 ? (
     <EmptyContent
       title={`No Favorite${

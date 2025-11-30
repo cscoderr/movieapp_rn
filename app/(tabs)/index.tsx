@@ -3,10 +3,12 @@ import MovieSectionList, {
 } from "../../components/MovieSectionList";
 import { ScrollView, StyleSheet } from "react-native";
 import React from "react";
+import { Stack } from "expo-router";
 
 const HomeScreen = () => {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
+      <Stack.Screen options={{ title: "Home", headerShown: true }} />
       <MovieSectionList
         title="Trending Today"
         path={MovieSectionType.trending}

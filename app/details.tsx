@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { StackParamsList } from "../navigators/RootNavigator";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useMemo } from "react";
 import CastSectionList from "../components/CastSectionList";
@@ -19,6 +18,7 @@ import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { LinearGradient } from "expo-linear-gradient";
 import { useFavoriteStore } from "../stores/useFavoriteStore";
 import RecommendationsList from "../components/RecommendationsList";
+import { StackParamsList } from "../types/StackParamsList";
 
 const DetailsScreen = ({
   navigation,
@@ -143,7 +143,7 @@ const DetailsScreen = ({
                   width={3}
                   fill={movie.vote_average * 10}
                   tintColor={progressColor}
-                  onAnimationComplete={() => console.log("onAnimationComplete")}
+                  onAnimationComplete={() => {}}
                   backgroundColor={backgroundColor}
                   rotation={0}
                 >

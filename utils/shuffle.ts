@@ -1,5 +1,3 @@
-import { Movie } from "../types";
-
 export function shuffle<T>(array: T[]): T[] {
   let newArray = array.slice();
   let currentIndex = newArray.length;

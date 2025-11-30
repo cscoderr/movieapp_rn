@@ -1,34 +1,85 @@
+import { Tabs } from "expo-router";
+import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import HomeScreen from "../screens/Tabs/HomeScreen";
-import MoviesScreen from "../screens/Tabs/MoviesScreen";
-import TVShowsScreen from "../screens/Tabs/TvShowsScreen";
-import FavoriteScreen from "../screens/Tabs/FavoriteScreen";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { ComponentProps } from "react";
 import { Platform, StyleProp, TextStyle, ViewStyle } from "react-native";
-import SettingsScreen from "../screens/Tabs/Settings";
 import { SymbolView } from "expo-symbols";
+import {
+  NativeTabs,
+  Icon,
+  Label,
+  VectorIcon,
+} from "expo-router/unstable-native-tabs";
 
-export type TabParamsList = {
-  Home: undefined;
-  Movies: undefined;
-  TVShows: undefined;
-  Favorites: undefined;
-  Settings: undefined;
-};
-const Tab = createBottomTabNavigator<TabParamsList>();
-
-const TabNavigator = () => {
+export default function TabLayout() {
   return (
-    <Tab.Navigator
-      screenOptions={(props) => ({
+    <NativeTabs
+      minimizeBehavior="onScrollDown"
+      labelVisibilityMode="labeled"
+      tintColor={"tomato"}
+    >
+      <NativeTabs.Trigger name="index" options={{ title: "Home" }}>
+        <Label>Home</Label>
+        {Platform.select({
+          ios: <Icon sf={{ default: "house", selected: "house.fill" }} />,
+          android: (
+            <Icon src={<VectorIcon family={MaterialIcons} name="home" />} />
+          ),
+        })}
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="movies">
+        <Label>Movies</Label>
+        {Platform.select({
+          ios: <Icon sf={{ default: "film", selected: "film.fill" }} />,
+          android: (
+            <Icon src={<VectorIcon family={MaterialIcons} name="videocam" />} />
+          ),
+        })}
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="tvshows">
+        <Label>TvShows</Label>
+        {Platform.select({
+          ios: <Icon sf={{ default: "tv", selected: "tv.fill" }} />,
+          android: (
+            <Icon src={<VectorIcon family={MaterialIcons} name="tv" />} />
+          ),
+        })}
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="favorites">
+        <Label>Favorites</Label>
+        {Platform.select({
+          ios: <Icon sf={{ default: "heart", selected: "heart.fill" }} />,
+          android: (
+            <Icon src={<VectorIcon family={MaterialIcons} name="favorite" />} />
+          ),
+        })}
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <Label>Settings</Label>
+        {Platform.select({
+          ios: (
+            <Icon sf={{ default: "gearshape", selected: "gearshape.fill" }} />
+          ),
+          android: (
+            <Icon src={<VectorIcon family={MaterialIcons} name="settings" />} />
+          ),
+        })}
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+
+function AndroidTabLayout() {
+  return (
+    <Tabs
+      screenOptions={(_) => ({
         tabBarActiveTintColor: "tomato",
         tabBarInactiveTintColor: "gray",
       })}
     >
-      <Tab.Screen
-        name="Home"
-        component={HomeScreen}
+      <Tabs.Screen
+        name="index"
         options={{
           tabBarIcon: ({ focused, size, color }) => (
             <SymbolView
@@ -47,9 +98,8 @@ const TabNavigator = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="Movies"
-        component={MoviesScreen}
+      <Tabs.Screen
+        name="movies"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
@@ -69,9 +119,8 @@ const TabNavigator = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="TVShows"
-        component={TVShowsScreen}
+      <Tabs.Screen
+        name="tvshows"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
@@ -91,9 +140,8 @@ const TabNavigator = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="Favorites"
-        component={FavoriteScreen}
+      <Tabs.Screen
+        name="favorites"
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, size, color }) => (
@@ -113,9 +161,8 @@ const TabNavigator = () => {
           ),
         }}
       />
-      <Tab.Screen
-        name="Settings"
-        component={SettingsScreen}
+      <Tabs.Screen
+        name="settings"
         options={{
           headerShown: true,
           tabBarIcon: ({ focused, size, color }) => (
@@ -135,16 +182,6 @@ const TabNavigator = () => {
           ),
         }}
       />
-    </Tab.Navigator>
+    </Tabs>
   );
-};
-
-type TabIconProps = {
-  style: StyleProp<TextStyle>;
-  name: ComponentProps<typeof Ionicons>["name"];
-};
-const TabBarIcon = ({ style, name }: TabIconProps) => {
-  return <Ionicons size={24} name={name} style={style} />;
-};
-
-export default TabNavigator;
+}

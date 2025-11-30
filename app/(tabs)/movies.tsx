@@ -10,7 +10,7 @@ import {
   NativeStackNavigationProp,
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
-import { StackParamsList } from "../../navigators/RootNavigator";
+import { StackParamsList } from "../../types/StackParamsList";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import EmptyContent from "../../components/EmptyContent";
 import { SafeAreaView } from "react-native-safe-area-context";

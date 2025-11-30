@@ -7,12 +7,12 @@ import {
   View,
 } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { StackParamsList } from "../navigators/RootNavigator";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import LoadingIndicator from "../components/LoadingIndicator";
 import MovieCard from "../components/MovieCard";
 import EmptyContent from "../components/EmptyContent";
 import { fetchDataWithPath } from "../services/api";
+import { StackParamsList } from "../types/StackParamsList";
 
 const AllScreen = ({
   route,

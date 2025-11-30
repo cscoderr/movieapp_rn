@@ -59,7 +59,7 @@ const ImageViewWithProgess = ({
           width={3}
           fill={progress * 10}
           tintColor={progressColor}
-          onAnimationComplete={() => console.log("onAnimationComplete")}
+          onAnimationComplete={() => {}}
           backgroundColor={backgroundColor}
           rotation={0}
         >

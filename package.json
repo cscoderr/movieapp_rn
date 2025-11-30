@@ -1,7 +1,7 @@
 {
   "name": "movieapp",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -10,32 +10,42 @@
   },
   "dependencies": {
     "@bacons/apple-colors": "^0.0.8",
-    "@expo/vector-icons": "^14.0.4",
-    "@react-native-async-storage/async-storage": "1.23.1",
+    "@expo/vector-icons": "^15.0.3",
+    "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
     "@react-navigation/native-stack": "^7.2.0",
     "@tanstack/react-query": "^5.66.0",
-    "expo": "~52.0.33",
-    "expo-linear-gradient": "~14.0.2",
-    "expo-status-bar": "~2.0.1",
+    "babel-preset-expo": "~54.0.0",
+    "expo": "~54.0.25",
+    "expo-asset": "~12.0.10",
+    "expo-constants": "~18.0.10",
+    "expo-font": "~14.0.9",
+    "expo-linear-gradient": "~15.0.7",
+    "expo-linking": "~8.0.9",
+    "expo-router": "~6.0.15",
+    "expo-splash-screen": "~31.0.11",
+    "expo-status-bar": "~3.0.8",
+    "expo-symbols": "~1.0.7",
     "install": "^0.13.0",
-    "lottie-react-native": "7.1.0",
-    "npm": "^11.1.0",
-    "react": "18.3.1",
-    "react-native": "0.76.7",
+    "lottie-react-native": "~7.3.1",
+    "react": "19.1.0",
+    "react-dom": "19.1.0",
+    "react-native": "0.81.5",
     "react-native-circular-progress": "^1.4.1",
-    "react-native-pager-view": "6.5.1",
-    "react-native-safe-area-context": "^5.2.0",
+    "react-native-pager-view": "6.9.1",
+    "react-native-safe-area-context": "~5.6.0",
+    "react-native-screens": "~4.16.0",
     "react-native-shimmer-placeholder": "^2.0.9",
+    "react-native-svg": "15.12.1",
     "react-native-tab-view": "^4.0.5",
-    "zustand": "^5.0.3",
-    "expo-symbols": "~0.2.2"
+    "zustand": "^5.0.3"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "@types/react": "~18.3.12",
-    "typescript": "^5.3.3"
+    "@types/react": "~19.1.10",
+    "typescript": "~5.9.2"
   },
-  "private": true
+  "private": true,
+  "packageManager": "yarn@3.6.1+sha512.de524adec81a6c3d7a26d936d439d2832e351cdfc5728f9d91f3fc85dd20b04391c038e9b4ecab11cae2b0dd9f0d55fd355af766bc5c1a7f8d25d96bb2a0b2ca"
 }
