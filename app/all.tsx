@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -6,21 +6,22 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import LoadingIndicator from "../components/LoadingIndicator";
 import MovieCard from "../components/MovieCard";
 import EmptyContent from "../components/EmptyContent";
 import { fetchDataWithPath } from "../services/api";
-import { StackParamsList } from "../types/StackParamsList";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
-const AllScreen = ({
-  route,
-  navigation,
-}: NativeStackScreenProps<StackParamsList, "All">) => {
-  const title = route.params.title;
-  const type = route.params.type;
+type AllScreenParams = {
+  title: string;
+  type: string;
+};
+
+const AllScreen = () => {
+  const { title, type } = useLocalSearchParams<AllScreenParams>();
   const { width } = useWindowDimensions();
+  const router = useRouter();
   const { status, data, error, fetchNextPage, isFetchingNextPage } =
     useInfiniteQuery({
       queryKey: ["trending", title, type],
@@ -45,21 +46,12 @@ const AllScreen = ({
       );
     }
   }, [query, data]);
-  useEffect(() => {
-    navigation.setOptions({
-      title: title,
-      headerLargeTitle: true,
-      headerBackVisible: true,
-      headerBackTitle: "Back",
-      headerSearchBarOptions: {
-        inputType: "text",
-        placeholder: "Enter your search",
-        onChangeText: (event) => setQuery(event.nativeEvent.text),
-        onSearchButtonPress: (event) => setQuery(event.nativeEvent.text),
-      },
-      headerTransparent: false,
-    });
-  }, []);
+
+  const handleEndReached = () => {
+    if (query === "") {
+      fetchNextPage();
+    }
+  };
 
   if (status === "pending") {
     return <LoadingIndicator />;
@@ -73,31 +65,51 @@ const AllScreen = ({
     return <EmptyContent title={`${query} not found`} icon="search-circle" />;
   }
   return (
-    <FlatList
-      data={queryData}
-      keyExtractor={(item) => item.id.toString()}
-      renderItem={({ item }) => (
-        <MovieCard
-          movie={item}
-          onPress={() => {
-            navigation.navigate("Details", { movie: item });
-          }}
-          style={{ width: (width - 30) / 2 }}
-        />
-      )}
-      numColumns={2}
-      ItemSeparatorComponent={() => (
-        <View style={{ height: 15, backgroundColor: "transparent" }} />
-      )}
-      contentContainerStyle={{ paddingHorizontal: 10 }}
-      columnWrapperStyle={{ gap: 10 }}
-      style={{ paddingVertical: 10, backgroundColor: "white" }}
-      onEndReached={query != "" ? () => {} : () => fetchNextPage()}
-      onEndReachedThreshold={0.3}
-      ListFooterComponent={() =>
-        isFetchingNextPage ? <ActivityIndicator /> : null
-      }
-    />
+    <>
+      <Stack.Screen
+        options={{
+          title: title,
+          headerLargeTitle: true,
+          headerBackVisible: true,
+          headerBackTitle: "Back",
+          headerSearchBarOptions: {
+            inputType: "text",
+            placeholder: "Enter your search",
+            onChangeText: (event) => setQuery(event.nativeEvent.text),
+            onSearchButtonPress: (event) => setQuery(event.nativeEvent.text),
+          },
+          headerTransparent: false,
+        }}
+      />
+      <FlatList
+        data={queryData}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
+          <MovieCard
+            movie={item}
+            onPress={() => {
+              router.navigate({
+                pathname: "/details",
+                params: { movie: JSON.stringify(item) },
+              });
+            }}
+            style={{ width: (width - 30) / 2 }}
+          />
+        )}
+        numColumns={2}
+        ItemSeparatorComponent={() => (
+          <View style={{ height: 15, backgroundColor: "transparent" }} />
+        )}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+        columnWrapperStyle={{ gap: 10 }}
+        style={{ paddingVertical: 10, backgroundColor: "white" }}
+        onEndReached={handleEndReached}
+        onEndReachedThreshold={0.3}
+        ListFooterComponent={() =>
+          isFetchingNextPage ? <ActivityIndicator /> : null
+        }
+      />
+    </>
   );
 };
 

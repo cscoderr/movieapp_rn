@@ -8,24 +8,20 @@ import {
   View,
 } from "react-native";
 import { Movie } from "../../types";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { StackParamsList } from "../../types/StackParamsList";
 import EmptyContent from "../../components/EmptyContent";
 import { useFavoriteStore } from "../../stores/useFavoriteStore";
 import { TabBar, TabView } from "react-native-tab-view";
-import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import RNTouchableBounce from "react-native/Libraries/Components/Touchable/TouchableBounce";
+import { useRouter } from "expo-router";
 
-const FavoriteRoute = ({
-  navigation,
-  type,
-}: {
-  navigation: NativeStackNavigationProp<StackParamsList>;
+type FavoriteRouteProps = {
   type: string;
-}) => {
+};
+
+const FavoriteRoute: React.FC<FavoriteRouteProps> = ({ type }) => {
   const movies = useFavoriteStore((state) => state.movies);
+  const router = useRouter();
   const favoriteMovies = React.useMemo(() => {
     if (type === "all") return movies.toReversed();
     if (type === "movie")
@@ -50,7 +46,12 @@ const FavoriteRoute = ({
       renderItem={({ item }) => (
         <Item
           item={item}
-          onPress={() => navigation.push("Details", { movie: item })}
+          onPress={() =>
+            router.push({
+              pathname: "/details",
+              params: { movie: JSON.stringify(item) },
+            })
+          }
         />
       )}
       ItemSeparatorComponent={ItemSeperator}
@@ -94,13 +95,9 @@ const Item = ({ item, onPress }: ItemProps) => {
   );
 };
 
-const renderScene = ({
-  route,
-  navigation,
-}: {
-  route: { key: string; title: string };
-  navigation: NativeStackNavigationProp<StackParamsList>;
-}) => <FavoriteRoute navigation={navigation} type={route.key} />;
+const renderScene = (route: { key: string; title: string }) => (
+  <FavoriteRoute type={route.key} />
+);
 
 const routes = [
   { key: "all", title: "All" },
@@ -121,8 +118,6 @@ const renderTabBar = (props) => (
 );
 
 const FavoriteScreen = () => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<StackParamsList>>();
   const { width } = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
   return (
@@ -132,7 +127,7 @@ const FavoriteScreen = () => {
     >
       <TabView
         navigationState={{ index, routes }}
-        renderScene={({ route }) => renderScene({ route, navigation })}
+        renderScene={({ route }) => renderScene(route)}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
         initialLayout={{ width: width }}

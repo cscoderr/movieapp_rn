@@ -30,7 +30,6 @@ const SettingsScreen = () => {
         paddingBottom: 64,
       }}
     >
-      <Stack.Screen options={{ title: "Settings" }} />
       <Section title="App">
         <RNText
           trailing={

@@ -6,24 +6,20 @@ import {
   View,
 } from "react-native";
 import MovieCard from "../../components/MovieCard";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
-import { StackParamsList } from "../../types/StackParamsList";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import EmptyContent from "../../components/EmptyContent";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabBar, TabView } from "react-native-tab-view";
 import React from "react";
 import { useMovies } from "../../hooks/useMovies";
+import { useRouter } from "expo-router";
 
 type MoviewRouteProps = {
-  navigation: NativeStackNavigationProp<StackParamsList>;
   type: string;
 };
-const MoviesRoute = ({ navigation, type = "popular" }: MoviewRouteProps) => {
+const MoviesRoute: React.FC<MoviewRouteProps> = ({ type = "popular" }) => {
   const { width } = useWindowDimensions();
+  const router = useRouter();
   const { status, error, fetchNextPage, isFetchingNextPage, data } =
     useMovies(type);
 
@@ -42,7 +38,12 @@ const MoviesRoute = ({ navigation, type = "popular" }: MoviewRouteProps) => {
       renderItem={({ item }) => (
         <MovieCard
           movie={item}
-          onPress={() => navigation.push("Details", { movie: item })}
+          onPress={() =>
+            router.push({
+              pathname: "/details",
+              params: { movie: JSON.stringify(item) },
+            })
+          }
           style={{ width: (width - 30) / 2 }}
         />
       )}
@@ -60,13 +61,9 @@ const MoviesRoute = ({ navigation, type = "popular" }: MoviewRouteProps) => {
   );
 };
 
-const renderScene = ({
-  route,
-  navigation,
-}: {
-  route: { key: string; title: string };
-  navigation: NativeStackNavigationProp<StackParamsList>;
-}) => <MoviesRoute type={route.key} navigation={navigation} />;
+const renderScene = (route: { key: string; title: string }) => (
+  <MoviesRoute type={route.key} />
+);
 
 const routes = [
   { key: "popular", title: "Popular" },
@@ -87,9 +84,7 @@ const renderTabBar = (props) => (
   />
 );
 
-const MoviesScreen = ({
-  navigation,
-}: NativeStackScreenProps<StackParamsList>) => {
+const MoviesScreen = () => {
   const { width } = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
   return (
@@ -99,7 +94,7 @@ const MoviesScreen = ({
     >
       <TabView
         navigationState={{ index, routes }}
-        renderScene={({ route }) => renderScene({ route, navigation })}
+        renderScene={({ route }) => renderScene(route)}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
         initialLayout={{ width: width }}

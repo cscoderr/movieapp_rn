@@ -19,12 +19,16 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useFavoriteStore } from "../stores/useFavoriteStore";
 import RecommendationsList from "../components/RecommendationsList";
 import { StackParamsList } from "../types/StackParamsList";
+import {
+  useLocalSearchParams,
+  useRouter,
+  useSearchParams,
+} from "expo-router/build/hooks";
 
-const DetailsScreen = ({
-  navigation,
-  route,
-}: NativeStackScreenProps<StackParamsList, "Details">) => {
-  const movie = route.params.movie;
+const DetailsScreen = () => {
+  const { movie: movieData } = useLocalSearchParams();
+  const movie = JSON.parse(movieData as string);
+  const router = useRouter();
   const { top } = useSafeAreaInsets();
   const setFavoriteMovie = useFavoriteStore((state) => state.setMovie);
   const removeFavoriteMovies = useFavoriteStore((state) => state.removeMovie);
@@ -64,7 +68,7 @@ const DetailsScreen = ({
       <View style={styles.imageContainer}>
         <View style={[styles.topButtonContainer, { top: top }]}>
           <View style={styles.circleButton}>
-            <TouchableOpacity onPress={() => navigation.pop()}>
+            <TouchableOpacity onPress={() => router.back()}>
               <Ionicons name="arrow-back" size={24} color={"white"} />
             </TouchableOpacity>
           </View>

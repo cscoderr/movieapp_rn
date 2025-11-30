@@ -19,7 +19,7 @@ export default function TabLayout() {
       labelVisibilityMode="labeled"
       tintColor={"tomato"}
     >
-      <NativeTabs.Trigger name="index" options={{ title: "Home" }}>
+      <NativeTabs.Trigger name="(home)" options={{ title: "Home" }}>
         <Label>Home</Label>
         {Platform.select({
           ios: <Icon sf={{ default: "house", selected: "house.fill" }} />,
@@ -55,7 +55,7 @@ export default function TabLayout() {
           ),
         })}
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="settings">
+      <NativeTabs.Trigger name="(settings)">
         <Label>Settings</Label>
         {Platform.select({
           ios: (
@@ -67,121 +67,5 @@ export default function TabLayout() {
         })}
       </NativeTabs.Trigger>
     </NativeTabs>
-  );
-}
-
-function AndroidTabLayout() {
-  return (
-    <Tabs
-      screenOptions={(_) => ({
-        tabBarActiveTintColor: "tomato",
-        tabBarInactiveTintColor: "gray",
-      })}
-    >
-      <Tabs.Screen
-        name="index"
-        options={{
-          tabBarIcon: ({ focused, size, color }) => (
-            <SymbolView
-              name={focused ? "house.fill" : "house"}
-              style={{ width: 28, height: 28 }}
-              type="hierarchical"
-              tintColor={color}
-              fallback={
-                <Ionicons
-                  name={focused ? "home" : "home-outline"}
-                  size={size}
-                  color={color}
-                />
-              }
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="movies"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ focused, size, color }) => (
-            <SymbolView
-              name={focused ? "film.fill" : "film"}
-              style={{ width: 28, height: 28 }}
-              type="hierarchical"
-              tintColor={color}
-              fallback={
-                <Ionicons
-                  name={focused ? "videocam" : "videocam-outline"}
-                  size={size}
-                  color={color}
-                />
-              }
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="tvshows"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ focused, size, color }) => (
-            <SymbolView
-              name={focused ? "tv.fill" : "tv"}
-              style={{ width: 28, height: 28 }}
-              type="hierarchical"
-              tintColor={color}
-              fallback={
-                <Ionicons
-                  name={focused ? "tv" : "tv-outline"}
-                  size={size}
-                  color={color}
-                />
-              }
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="favorites"
-        options={{
-          headerShown: false,
-          tabBarIcon: ({ focused, size, color }) => (
-            <SymbolView
-              name={focused ? "heart.fill" : "heart"}
-              style={{ width: 28, height: 28 }}
-              type="hierarchical"
-              tintColor={color}
-              fallback={
-                <Ionicons
-                  name={focused ? "heart" : "heart-outline"}
-                  size={size}
-                  color={color}
-                />
-              }
-            />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="settings"
-        options={{
-          headerShown: true,
-          tabBarIcon: ({ focused, size, color }) => (
-            <SymbolView
-              name={focused ? "gearshape.fill" : "gearshape"}
-              style={{ width: 28, height: 28 }}
-              type="hierarchical"
-              tintColor={color}
-              fallback={
-                <Ionicons
-                  name={focused ? "settings" : "settings-outline"}
-                  size={size}
-                  color={color}
-                />
-              }
-            />
-          ),
-        }}
-      />
-    </Tabs>
   );
 }

@@ -10,12 +10,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { StackParamsList } from "../navigators/RootNavigator";
 import MovieShimmerList from "./MovieShimmerList";
 import { useQuery } from "@tanstack/react-query";
 import MovieCard from "./MovieCard";
 import { useNavigation } from "@react-navigation/native";
 import { fetchDataWithPath } from "../services/api";
+import { useRouter } from "expo-router";
 
 export enum MovieSectionType {
   trending = "trending/movie/day",
@@ -27,8 +27,7 @@ type MovieSectionListProps = {
   path: MovieSectionType;
 };
 const MovieSectionList = ({ title, path }: MovieSectionListProps) => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<StackParamsList>>();
+  const router = useRouter();
   const {
     isPending: loading,
     error,
@@ -51,7 +50,10 @@ const MovieSectionList = ({ title, path }: MovieSectionListProps) => {
         <Text style={styles.title}>{title}</Text>
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate("All", { title: title, type: path })
+            router.navigate({
+              pathname: "/all",
+              params: { title: title, type: path },
+            })
           }
         >
           <Text>See all</Text>
@@ -64,7 +66,12 @@ const MovieSectionList = ({ title, path }: MovieSectionListProps) => {
           renderItem={({ item }) => (
             <MovieCard
               movie={item}
-              onPress={() => navigation.push("Details", { movie: item })}
+              onPress={() => {
+                router.push({
+                  pathname: "/details",
+                  params: { movie: JSON.stringify(item) },
+                });
+              }}
             />
           )}
           data={movies}

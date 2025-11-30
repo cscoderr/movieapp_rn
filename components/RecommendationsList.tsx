@@ -1,19 +1,18 @@
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { StackParamsList } from "../navigators/RootNavigator";
 import MovieShimmerList from "./MovieShimmerList";
 import { useQuery } from "@tanstack/react-query";
 import MovieCard from "./MovieCard";
 import { useNavigation } from "@react-navigation/native";
 import { fetchSimilarMoviesorTv } from "../services/api";
+import { useRouter } from "expo-router";
 
 type RecommendationsListProps = {
   movieId: number;
   type: string;
 };
 const RecommendationsList = ({ movieId, type }: RecommendationsListProps) => {
-  const navigation =
-    useNavigation<NativeStackNavigationProp<StackParamsList>>();
+  const router = useRouter();
   const {
     isPending: loading,
     error,
@@ -37,7 +36,12 @@ const RecommendationsList = ({ movieId, type }: RecommendationsListProps) => {
           renderItem={({ item }) => (
             <MovieCard
               movie={item}
-              onPress={() => navigation.push("Details", { movie: item })}
+              onPress={() =>
+                router.push({
+                  pathname: "/details",
+                  params: { movie: JSON.stringify(item) },
+                })
+              }
             />
           )}
           data={movies}

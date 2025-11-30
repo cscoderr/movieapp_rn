@@ -6,25 +6,21 @@ import {
   View,
 } from "react-native";
 import MovieCard from "../../components/MovieCard";
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
 import LoadingIndicator from "../../components/LoadingIndicator";
 import EmptyContent from "../../components/EmptyContent";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabBar, TabView } from "react-native-tab-view";
 import React from "react";
 import { useTVShows } from "../../hooks/useTVShows";
-import { StackParamsList } from "../../types/StackParamsList";
+import { useRouter } from "expo-router";
 
-type TVShowsProps = {
+type TVShowsRouteProps = {
   type: string;
-  navigation: NativeStackNavigationProp<StackParamsList>;
 };
-const TVShowsRoute = ({ navigation, type }: TVShowsProps) => {
+const TVShowsRoute: React.FC<TVShowsRouteProps> = ({ type }) => {
   const { status, error, fetchNextPage, data, isFetchingNextPage } =
     useTVShows(type);
+  const router = useRouter();
   const { width } = useWindowDimensions();
 
   if (status === "pending") {
@@ -42,7 +38,12 @@ const TVShowsRoute = ({ navigation, type }: TVShowsProps) => {
       renderItem={({ item }) => (
         <MovieCard
           movie={item}
-          onPress={() => navigation.push("Details", { movie: item })}
+          onPress={() =>
+            router.push({
+              pathname: "/details",
+              params: { movie: JSON.stringify(item) },
+            })
+          }
           style={{ width: (width - 30) / 2 }}
         />
       )}
@@ -60,13 +61,9 @@ const TVShowsRoute = ({ navigation, type }: TVShowsProps) => {
   );
 };
 
-const renderScene = ({
-  route,
-  navigation,
-}: {
-  route;
-  navigation: NativeStackNavigationProp<StackParamsList>;
-}) => <TVShowsRoute type={route.key} navigation={navigation} />;
+const renderScene = (route: { key: string; title: string }) => (
+  <TVShowsRoute type={route.key} />
+);
 
 const routes = [
   { key: "popular", title: "Popular" },
@@ -87,9 +84,7 @@ const renderTabBar = (props) => (
   />
 );
 
-const TVShowsScreen = ({
-  navigation,
-}: NativeStackScreenProps<StackParamsList>) => {
+const TVShowsScreen = () => {
   const { width } = useWindowDimensions();
   const [index, setIndex] = React.useState(0);
   return (
@@ -99,7 +94,7 @@ const TVShowsScreen = ({
     >
       <TabView
         navigationState={{ index, routes }}
-        renderScene={({ route }) => renderScene({ route, navigation })}
+        renderScene={({ route }) => renderScene(route)}
         renderTabBar={renderTabBar}
         onIndexChange={setIndex}
         initialLayout={{ width: width }}
