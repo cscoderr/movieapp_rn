@@ -15,9 +15,10 @@ import {
 export default function TabLayout() {
   return (
     <NativeTabs
-      minimizeBehavior="onScrollDown"
       labelVisibilityMode="labeled"
       tintColor={"tomato"}
+      backgroundColor={"#FFFBFF"}
+      indicatorColor={"#FFDADA"}
     >
       <NativeTabs.Trigger name="(home)" options={{ title: "Home" }}>
         <Label>Home</Label>

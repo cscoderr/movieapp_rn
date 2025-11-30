@@ -5,6 +5,17 @@ The Movie app is a React Native-powered cross-platform application for Android a
 
 ### Screenshots
 
+##Old IOS
+
+<h4 align="center">
+<img src="screenshots/home_old.png" width="20%" vspace="5" hspace="5" /> 
+<img src="screenshots/details.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/all_old.png" width="20%" vspace="5" hspace="5" /> 
+<img src="screenshots/movies_old.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/tv_old.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/favorites_old.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/settings_old.png" width="20%" vspace="5" hspace="5" />
+
 ##IOS
 
 <h4 align="center">
@@ -19,10 +30,10 @@ The Movie app is a React Native-powered cross-platform application for Android a
 ## Android
 
 <h4 align="center">
-<img src="screenshots/home.png" width="20%" vspace="5" hspace="5" /> 
-<img src="screenshots/details.png" width="20%" vspace="5" hspace="5" />
-<img src="screenshots/all.png" width="20%" vspace="5" hspace="5" /> 
-<img src="screenshots/movies.png" width="20%" vspace="5" hspace="5" />
-<img src="screenshots/tv.png" width="20%" vspace="5" hspace="5" />
-<img src="screenshots/favorites.png" width="20%" vspace="5" hspace="5" />
-<img src="screenshots/settings.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/home_android.png" width="20%" vspace="5" hspace="5" /> 
+<img src="screenshots/details_android.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/all_android.png" width="20%" vspace="5" hspace="5" /> 
+<img src="screenshots/movies_android.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/tv_android.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/favorites_android.png" width="20%" vspace="5" hspace="5" />
+<img src="screenshots/settings_android.png" width="20%" vspace="5" hspace="5" />
