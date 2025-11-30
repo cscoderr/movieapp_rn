@@ -69,7 +69,7 @@ const AllScreen = () => {
       <Stack.Screen
         options={{
           title: title,
-          headerLargeTitle: true,
+          headerLargeTitle: false,
           headerBackVisible: true,
           headerBackTitle: "Back",
           headerSearchBarOptions: {
