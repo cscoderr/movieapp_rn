@@ -5,7 +5,7 @@ The Movie app is a React Native-powered cross-platform application for Android a
 
 ### Screenshots
 
-##Old IOS
+## Old IOS
 
 <h4 align="center">
 <img src="screenshots/home_old.png" width="20%" vspace="5" hspace="5" /> 
@@ -16,7 +16,7 @@ The Movie app is a React Native-powered cross-platform application for Android a
 <img src="screenshots/favorites_old.png" width="20%" vspace="5" hspace="5" />
 <img src="screenshots/settings_old.png" width="20%" vspace="5" hspace="5" />
 
-##IOS
+## IOS
 
 <h4 align="center">
 <img src="screenshots/home.png" width="20%" vspace="5" hspace="5" /> 
