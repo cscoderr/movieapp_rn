@@ -6,8 +6,8 @@ import {
   View,
   ViewStyle,
 } from "react-native";
-import ImageViewWithProgess from "./ImageViewWithProgress";
-import { Movie } from "../types";
+import ImageViewWithProgess from "@/components/ImageViewWithProgress";
+import { Movie } from "@/types";
 
 type MovieCardProps = {
   movie: Movie;

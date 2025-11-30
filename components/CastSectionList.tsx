@@ -1,8 +1,8 @@
-import { Cast } from "../types";
+import { Cast } from "@/types";
 import { FlatList, Image, StyleSheet, Text, View } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import CastListShimmer from "./CastListShimmer";
-import { fetchCasts } from "../services/api";
+import CastListShimmer from "@/components/CastListShimmer";
+import { fetchCasts } from "@/services/api";
 
 type CastSectionListProps = {
   title: string;

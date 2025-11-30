@@ -1,5 +1,5 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { Animated, FlatList, StyleSheet, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import ShimmerPlaceholder from "react-native-shimmer-placeholder";
 
 const DATA = Array.from({ length: 5 }, (_, index) => index + 1);

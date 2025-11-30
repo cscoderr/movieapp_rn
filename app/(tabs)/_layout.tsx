@@ -1,10 +1,6 @@
-import { Tabs } from "expo-router";
 import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { ComponentProps } from "react";
-import { Platform, StyleProp, TextStyle, ViewStyle } from "react-native";
-import { SymbolView } from "expo-symbols";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Platform } from "react-native";
 import {
   NativeTabs,
   Icon,

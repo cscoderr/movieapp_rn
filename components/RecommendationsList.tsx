@@ -1,10 +1,8 @@
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import MovieShimmerList from "./MovieShimmerList";
+import MovieShimmerList from "@/components/MovieShimmerList";
 import { useQuery } from "@tanstack/react-query";
-import MovieCard from "./MovieCard";
-import { useNavigation } from "@react-navigation/native";
-import { fetchSimilarMoviesorTv } from "../services/api";
+import MovieCard from "@/components/MovieCard";
+import { fetchSimilarMoviesorTv } from "@/services/api";
 import { useRouter } from "expo-router";
 
 type RecommendationsListProps = {

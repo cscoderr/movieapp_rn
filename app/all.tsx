@@ -1,4 +1,4 @@
-import { use, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -7,10 +7,10 @@ import {
   View,
 } from "react-native";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import LoadingIndicator from "../components/LoadingIndicator";
-import MovieCard from "../components/MovieCard";
-import EmptyContent from "../components/EmptyContent";
-import { fetchDataWithPath } from "../services/api";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import MovieCard from "@/components/MovieCard";
+import EmptyContent from "@/components/EmptyContent";
+import { fetchDataWithPath } from "@/services/api";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 
 type AllScreenParams = {

@@ -5,13 +5,13 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import MovieCard from "../../components/MovieCard";
-import LoadingIndicator from "../../components/LoadingIndicator";
-import EmptyContent from "../../components/EmptyContent";
+import MovieCard from "@/components/MovieCard";
+import LoadingIndicator from "@/components/LoadingIndicator";
+import EmptyContent from "@/components/EmptyContent";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { TabBar, TabView } from "react-native-tab-view";
 import React from "react";
-import { useTVShows } from "../../hooks/useTVShows";
+import { useTVShows } from "@/hooks/useTVShows";
 import { useRouter } from "expo-router";
 
 type TVShowsRouteProps = {

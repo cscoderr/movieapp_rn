@@ -1,4 +1,3 @@
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   Alert,
   Image,
@@ -11,19 +10,14 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useCallback, useMemo } from "react";
-import CastSectionList from "../components/CastSectionList";
-import ImageView from "../components/ImageView";
+import CastSectionList from "@/components/CastSectionList";
+import ImageView from "@/components/ImageView";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AnimatedCircularProgress } from "react-native-circular-progress";
 import { LinearGradient } from "expo-linear-gradient";
-import { useFavoriteStore } from "../stores/useFavoriteStore";
-import RecommendationsList from "../components/RecommendationsList";
-import { StackParamsList } from "../types/StackParamsList";
-import {
-  useLocalSearchParams,
-  useRouter,
-  useSearchParams,
-} from "expo-router/build/hooks";
+import { useFavoriteStore } from "@/stores/useFavoriteStore";
+import RecommendationsList from "@/components/RecommendationsList";
+import { useLocalSearchParams, useRouter } from "expo-router/build/hooks";
 
 const DetailsScreen = () => {
   const { movie: movieData } = useLocalSearchParams();
@@ -99,7 +93,6 @@ const DetailsScreen = () => {
           end={{ x: 1, y: 0 }}
           locations={[0.2, 0.5, 1]}
           style={{
-            position: "absolute",
             ...StyleSheet.absoluteFillObject,
           }}
         />
@@ -151,7 +144,7 @@ const DetailsScreen = () => {
                   backgroundColor={backgroundColor}
                   rotation={0}
                 >
-                  {(_) => (
+                  {() => (
                     <Text
                       style={{
                         fontSize: 12,
@@ -233,7 +226,6 @@ const styles = StyleSheet.create({
     padding: 15,
   },
   backdropImage: {
-    position: "absolute",
     ...StyleSheet.absoluteFillObject,
     resizeMode: "cover",
   },

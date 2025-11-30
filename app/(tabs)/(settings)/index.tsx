@@ -11,7 +11,6 @@ import {
 } from "react-native";
 import * as AppleColors from "@bacons/apple-colors";
 import { Ionicons } from "@expo/vector-icons";
-import { Stack } from "expo-router";
 
 const SettingsScreen = () => {
   const handleOpenURL = React.useCallback(async (url: string) => {

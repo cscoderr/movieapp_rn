@@ -1,9 +1,8 @@
 import MovieSectionList, {
   MovieSectionType,
-} from "../../../components/MovieSectionList";
+} from "@/components/MovieSectionList";
 import { ScrollView, StyleSheet } from "react-native";
 import React from "react";
-import { Stack } from "expo-router";
 
 const HomeScreen = () => {
   return (

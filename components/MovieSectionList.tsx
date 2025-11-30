@@ -1,9 +1,4 @@
 import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from "@react-navigation/native-stack";
-import { Movie, MovieResponse } from "../types";
-import {
   FlatList,
   StyleSheet,
   Text,
@@ -13,7 +8,6 @@ import {
 import MovieShimmerList from "./MovieShimmerList";
 import { useQuery } from "@tanstack/react-query";
 import MovieCard from "./MovieCard";
-import { useNavigation } from "@react-navigation/native";
 import { fetchDataWithPath } from "../services/api";
 import { useRouter } from "expo-router";
 

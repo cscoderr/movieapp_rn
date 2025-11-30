@@ -7,9 +7,9 @@ import {
   useWindowDimensions,
   View,
 } from "react-native";
-import { Movie } from "../../types";
-import EmptyContent from "../../components/EmptyContent";
-import { useFavoriteStore } from "../../stores/useFavoriteStore";
+import { Movie } from "@/types";
+import EmptyContent from "@/components/EmptyContent";
+import { useFavoriteStore } from "@/stores/useFavoriteStore";
 import { TabBar, TabView } from "react-native-tab-view";
 import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
